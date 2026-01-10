@@ -1,0 +1,188 @@
+:root {
+    --pw-bg-color: #0a0a0c;
+    --pw-border-radius: 12px;
+    --pw-shadow-initial: 0 4px 6px rgba(0,0,0,0.2);
+    --pw-shadow-landed: 0 5px 15px rgba(255, 50, 100, 0.3);
+    --pw-shadow-spotlight: 0 30px 60px rgba(0,0,0,0.5);
+    --pw-heart-color: #ff3366;
+    --pw-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --pw-duration: 1s;
+}
+
+.photo-wall {
+    position: relative;
+    width: 90vw;
+    height: 70vh;
+    max-width: 1000px;
+    margin: 0 auto;
+    /* 移除之前的 Grid，改用绝对定位 */
+}
+
+/* 最终完成时的背景心形光晕 */
+.photo-wall.completed::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 51, 102, 0.2) 0%, transparent 70%);
+    z-index: 0;
+    animation: heart-glow 2s infinite alternate;
+}
+
+@keyframes heart-glow {
+    from { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    to { transform: translate(-50%, -50%) scale(1.5); opacity: 0.8; }
+}
+
+.photo-item {
+    position: absolute; /* 改为绝对定位 */
+    width: 36px;   /* 进一步压缩尺寸 */
+    height: 28px;
+    background: #1a1a1a;
+    border-radius: 4px; 
+    box-shadow: var(--pw-shadow-initial);
+    overflow: hidden;
+    opacity: 0;
+    will-change: transform, opacity, left, top;
+    transition: 
+        transform var(--pw-duration) var(--pw-easing), 
+        opacity var(--pw-duration) ease-out, 
+        box-shadow var(--pw-duration) ease-out,
+        left var(--pw-duration) var(--pw-easing),
+        top var(--pw-duration) var(--pw-easing);
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 垂直独白文字样式 */
+.monologue {
+    position: fixed;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+    font-family: "STKaiti", "KaiTi", "楷体", serif;
+    opacity: 1; /* 容器默认可见，控制字符 span */
+    z-index: 5;
+    pointer-events: none;
+}
+
+.monologue span {
+    opacity: 0;
+    display: inline-block;
+    transform: scale(1.5);
+    filter: blur(10px);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.monologue span.revealed {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+}
+
+.monologue.fade-out {
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+/* 入场动画多样化 */
+.entry-spin { transform: translate(-50%, -50%) rotate(-720deg) scale(0); }
+.entry-flip { transform: translate(-50%, -50%) rotateY(180deg) rotateX(180deg) scale(0); }
+.entry-zoom { transform: translate(-50%, -50%) scale(0); filter: blur(20px); }
+.entry-slide { transform: translate(-50%, -200%) scale(0.5); }
+
+.photo-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    color: white;
+    padding: 2px;
+    font-size: 8px; /* 亮相时可见 */
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: all 0.3s ease;
+    text-align: center;
+    pointer-events: none;
+}
+
+.photo-item.spotlight .photo-info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 亮相状态 */
+.photo-item.spotlight {
+    opacity: 1;
+    z-index: 100;
+    box-shadow: var(--pw-shadow-spotlight);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 归位状态（心形） */
+.photo-item.landed {
+    opacity: 1;
+    box-shadow: var(--pw-shadow-landed);
+    z-index: 2;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg); /* 锚点居中 */
+}
+
+/* 轨道滑行模式：禁用 left/top 的过渡以保证 JS 实时更新的丝滑度 */
+.photo-item.orbiting {
+    transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease !important;
+    will-change: left, top;
+}
+
+/* 悬停暂停交互 */
+.photo-wall.paused .photo-item.orbiting {
+    /* 暂停状态由 JS 控制停止 requestAnimationFrame，这里提供视觉反馈 */
+    filter: saturate(0.5);
+}
+
+.photo-item.activated {
+    border-color: rgba(255, 51, 102, 0.5);
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+}
+
+/* 完成时的全场闪烁 */
+.photo-wall.completed::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    z-index: 999;
+    pointer-events: none;
+    animation: pw-flash 0.8s ease-out forwards;
+}
+
+@keyframes pw-flash {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@media (max-width: 640px) {
+    .photo-item {
+        width: 80px;
+        height: 60px;
+    }
+}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huina 2026: 奔赴山海</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --accent-blue: #00d4ff;
+            --accent-gold: #ffcc00;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background: #000;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        /* 视差背景容器 */
+        .scene {
+            position: relative; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #02111d 0%, #037bb5 100%);
+            overflow: hidden;
+        }
+
+        /* 远景：星空 */
+        .stars {
+            position: absolute; top: 0; left: 0; width: 200%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            animation: moveBg 60s linear infinite;
+        }
+
+        /* 中景：动态云层 */
+        .clouds {
+            position: absolute; bottom: 10%; left: 0; width: 200%; height: 50%;
+            background: url('https://pic.imgdb.cn/item/65a50993871b83018a16823c.png') repeat-x;
+            background-size: contain;
+            opacity: 0.4;
+            filter: blur(2px);
+            animation: moveBg 30s linear infinite;
+        }
+
+        /* 近景：飞驰的草地/流光 */
+        .ground {
+            position: absolute; bottom: 0; left: 0; width: 200%; height: 20%;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1));
+            border-top: 1px solid rgba(255,255,255,0.2);
+            animation: moveBg 2s linear infinite;
+        }
+
+        /* 马儿容器 */
+        .horse-wrapper {
+            position: absolute;
+            left: 15%;
+            bottom: 15%;
+            z-index: 10;
+            transition: all 0.5s;
+        }
+
+        .horse-img {
+            width: 350px;
+            height: auto;
+            /* 动漫马儿跑动的 GIF */
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+        }
+
+        /* UI 文字 */
+        .ui-layer {
+            position: absolute; top: 15%; width: 100%; text-align: center;
+            z-index: 20; pointer-events: none;
+        }
+
+        .year-text {
+            font-size: 150px; font-weight: 100; color: white;
+            letter-spacing: 20px; margin: 0;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+        }
+
+        .slogan {
+            font-size: 28px; color: rgba(255,255,255,0.8);
+            margin-top: 10px; letter-spacing: 10px;
+            font-weight: 200;
+        }
+
+        /* 底部控制 */
+        .controls {
+            position: absolute; bottom: 8%; width: 100%;
+            display: flex; justify-content: center; z-index: 30;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; padding: 18px 60px; font-size: 20px;
+            cursor: pointer; backdrop-filter: blur(10px);
+            transition: all 0.4s; letter-spacing: 5px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px white;
+            transform: translateY(-5px);
+        }
+
+        /* 动画 */
+        @keyframes moveBg {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* 转场光幕 */
+        #transition-flash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 100; display: none; opacity: 0;
+        }
+
+        /* 飞驰的线（增强速度感） */
+        .speed-line {
+            position: absolute; height: 1px; background: white; opacity: 0.3;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="transition-flash"></div>
+
+<div class="scene">
+    <div class="stars"></div>
+    <div class="clouds"></div>
+    <div id="speed-lines"></div>
+    <div class="ground"></div>
+
+    <div class="ui-layer">
+        <h1 class="year-text" id="year-display">2025</h1>
+        <p class="slogan" id="sub-text">数字化跋涉 · 志在千里</p>
+    </div>
+
+    <div class="horse-wrapper" id="horse-box">
+        <!-- 你找到的马儿 GIF 填在这里，我先用一个高质量的白马剪影 GIF 占位 -->
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY1eHd6dzFyeG96NXN6NXN6NXN6NXN6NXN6NXN6NXN6NXN6NXN6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9iZCZjdD1z/3o7TKMGpxx66d31Nu8/giphy.gif" 
+             alt="Anime Horse" class="horse-img">
+    </div>
+
+    <div class="controls">
+        <button class="btn-action" id="next-btn">加速跨越 2025 →</button>
+    </div>
+</div>
+
+<script>
+    // 创建随机速度线
+    const linesContainer = document.getElementById('speed-lines');
+    for (let i = 0; i < 20; i++) {
+        const line = document.createElement('div');
+        line.className = 'speed-line';
+        line.style.top = Math.random() * 100 + '%';
+        line.style.left = Math.random() * 100 + '%';
+        line.style.width = (Math.random() * 200 + 50) + 'px';
+        linesContainer.appendChild(line);
+    }
+
+    document.getElementById('next-btn').addEventListener('click', function() {
+        const btn = this;
+        btn.style.display = 'none';
+
+        // 1. 整体加速动画
+        gsap.to(".clouds", { duration: 1, ease: "power2.in" });
+        gsap.to(".ground", { duration: 1, ease: "power2.in" });
+        
+        // 2. 马儿冲刺
+        gsap.to("#horse-box", { 
+            x: 50, 
+            scale: 1.2, 
+            duration: 2, 
+            ease: "power2.inOut" 
+        });
+
+        // 3. 文字消失
+        gsap.to(".ui-layer", { opacity: 0, y: -50, duration: 1 });
+
+        // 4. 进入 2026
+        setTimeout(() => {
+            const yearText = document.getElementById('year-display');
+            yearText.innerText = "2026";
+            yearText.style.color = "#ffd700";
+            document.getElementById('sub-text').innerText = "破晓已至 · 开启新章";
+            
+            gsap.to(".ui-layer", { opacity: 1, y: 0, duration: 1.5, delay: 0.5 });
+            
+            // 5. 跳转白闪
+            setTimeout(() => {
+                const flash = document.getElementById('transition-flash');
+                flash.style.display = 'block';
+                gsap.to(flash, { 
+                    opacity: 1, 
+                    duration: 1.5, 
+                    onComplete: () => {
+                        window.location.href = 'oath.html';
+                    }
+                });
+            }, 2500);
+        }, 1000);
+    });
+
+    // 随机移动速度线
+    function animateLines() {
+        document.querySelectorAll('.speed-line').forEach(line => {
+            let left = parseFloat(line.style.left);
+            left -= 5;
+            if (left < -20) left = 120;
+            line.style.left = left + '%';
+        });
+        requestAnimationFrame(animateLines);
+    }
+    animateLines();
+</script>
+
+</body>
+</html>
+

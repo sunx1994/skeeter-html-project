@@ -1,0 +1,257 @@
+:root {
+    --primary: #00d4ff;
+    --secondary: #ffd700;
+    --bg-dark: #000814;
+    --text-white: #ffffff;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 视差背景 */
+.parallax-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat-x;
+}
+
+.layer-1 {
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3;
+}
+
+.layer-2 {
+    background: linear-gradient(to bottom, transparent, rgba(0, 212, 255, 0.1));
+    bottom: 0;
+    height: 40%;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 主内容 */
+.main-content {
+    position: relative;
+    z-index: 10;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.year-wrapper {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+#year-display {
+    font-size: clamp(80px, 15vw, 180px);
+    font-weight: 100;
+    margin: 0;
+    letter-spacing: 15px;
+    text-shadow: 0 0 30px var(--primary);
+}
+
+#slogan-text {
+    font-size: 24px;
+    opacity: 0.6;
+    letter-spacing: 10px;
+    font-weight: 200;
+}
+
+.character-box {
+    margin-bottom: 50px;
+}
+
+.horse-v2 {
+    width: 320px;
+    height: auto;
+    filter: drop-shadow(0 0 15px var(--primary));
+}
+
+.ui-controls {
+    margin-top: 20px;
+}
+
+.btn-v2 {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 15px 60px;
+    font-size: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+    letter-spacing: 5px;
+}
+
+.btn-v2:hover {
+    background: var(--primary);
+    color: #000;
+    box-shadow: 0 0 30px var(--primary);
+}
+
+/* 拼图舞台 */
+.puzzle-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    z-index: 20;
+    width: 100%;
+}
+
+.hidden { display: none !important; }
+
+.cyan-glow {
+    color: var(--primary);
+    text-shadow: 0 0 15px var(--primary);
+    letter-spacing: 5px;
+}
+
+/* 拼图网格：3列 x 2行 */
+.puzzle-grid {
+    --cols: 3;
+    --rows: 2;
+    --board-w: 600px;
+    --board-h: 400px;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    grid-template-rows: repeat(var(--rows), 1fr);
+    width: var(--board-w);
+    height: var(--board-h);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--primary);
+    position: relative;
+    gap: 2px;
+}
+
+/* 碎片样式 */
+.puzzle-piece {
+    width: 100%;
+    height: 100%;
+    /* 临时代替图：科技感背景 */
+    background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop');
+    background-size: var(--board-w) var(--board-h);
+    opacity: 0.1;
+    filter: grayscale(100%) brightness(0.5);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.puzzle-piece::after {
+    content: '?';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: rgba(255,255,255,0.2);
+}
+
+.puzzle-piece.revealed {
+    opacity: 1;
+    filter: grayscale(0%) brightness(1);
+    box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.puzzle-piece.revealed::after {
+    display: none;
+}
+
+/* 进度条 */
+.stats-panel { width: 100%; text-align: center; }
+.progress-bar {
+    width: 300px; height: 8px; background: rgba(255,255,255,0.1);
+    margin: 15px auto; border-radius: 4px; overflow: hidden;
+}
+#progress-fill {
+    width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), #fff);
+    box-shadow: 0 0 10px var(--primary);
+    transition: width 1s ease;
+}
+
+.puzzle-controls {
+    margin-top: 20px;
+}
+
+/* 拼图完成后的特殊状态 */
+.puzzle-grid.completed {
+    gap: 0;
+    border-color: var(--secondary);
+    box-shadow: 0 0 80px rgba(255, 215, 0, 0.4);
+    transition: all 1.5s ease;
+}
+
+.puzzle-grid.completed .puzzle-piece {
+    border-color: transparent;
+}
+
+/* 成功展示区 */
+.victory-zone {
+    text-align: center;
+    margin-top: -20px;
+    z-index: 30;
+}
+
+.victory-title {
+    font-size: 48px;
+    color: var(--secondary);
+    text-shadow: 0 0 20px var(--secondary);
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: 10px;
+}
+
+.victory-subtitle {
+    font-size: 20px;
+    opacity: 0.8;
+    margin-bottom: 30px;
+    letter-spacing: 5px;
+}
+
+.gold-btn {
+    border-color: var(--secondary) !important;
+    color: var(--secondary) !important;
+}
+
+.gold-btn:hover {
+    background: var(--secondary) !important;
+    color: #000 !important;
+}
+
+@keyframes gold-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+}
+
+.puzzle-grid.completed {
+    animation: gold-pulse 3s infinite;
+}
+

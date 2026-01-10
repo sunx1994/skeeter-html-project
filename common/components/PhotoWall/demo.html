@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huina 2026 | 心形风采巡礼</title>
+    <link rel="stylesheet" href="PhotoWall.css">
+    <style>
+        body {
+            margin: 0;
+            background-color: #0a0a0c;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* 防止巡礼过程中出现滚动条 */
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+        .header {
+            margin-top: 40px;
+            text-align: center;
+            z-index: 10;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #fff, #ff3366);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            letter-spacing: 4px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        /* 专门为心形布局微调容器 */
+        #photoWall {
+            margin-top: 20px;
+            flex-grow: 1;
+            width: 100%;
+            height: 600px;
+        }
+
+        .footer-note {
+            position: fixed;
+            bottom: 20px;
+            font-size: 12px;
+            color: #444;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>2026 匠心汇聚</h1>
+        <p>每一份坚持，终将汇成璀璨心芒</p>
+    </div>
+
+    <!-- 垂直独白文字 -->
+    <div id="monologue" class="monologue">感恩一路有你们！</div>
+
+    <!-- 心形照片墙容器 -->
+    <div id="photoWall" class="photo-wall"></div>
+
+    <div class="footer-note">© 2026 HUINA TECHNOLOGY - TEAM SPIRIT</div>
+
+    <!-- 引用脚本 -->
+    <script src="PhotoWall.js"></script>
+    <script>
+        // 增加到 18 张图片，让心形更饱满
+        const STAFF_DATA = [
+            { name: '张小明', role: '资深前端工程师', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80' },
+            { name: '王美丽', role: '产品经理', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80' },
+            { name: '李雷', role: '后端架构师', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80' },
+            { name: '韩梅梅', role: '视觉设计师', url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80' },
+            { name: '赵铁柱', role: '运维专家', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80' },
+            { name: '孙文艺', role: '测试工程师', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' },
+            { name: '周华', role: '市场总监', url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80' },
+            { name: '吴优', role: '内容运营', url: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=400&q=80' },
+            { name: '郑奇', role: '数据分析师', url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80' },
+            { name: '钱多多', role: '财务经理', url: 'https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=400&q=80' },
+            { name: '冯稳', role: '安全工程师', url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80' },
+            { name: '陈诚', role: '人力资源', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80' },
+            { name: '郭晓', role: '技术支持', url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80' },
+            { name: '林静', role: '商务合作', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' },
+            { name: '何平', role: '法务顾问', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80' },
+            { name: '苏苏', role: '行政主管', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80' },
+            { name: '马腾', role: '研发经理', url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80' },
+            { name: '叶子', role: 'UI设计师', url: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=400&q=80' }
+        ];
+
+        window.onload = () => {
+            new PhotoWall('photoWall', STAFF_DATA, {
+                spotlightDuration: 1000, 
+                animDuration: 800,
+                scale: 6.0  /* 增加放大倍数以补偿缩小的基准尺寸 */
+            });
+        };
+    </script>
+</body>
+</html>

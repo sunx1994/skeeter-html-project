@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huina 2026: 誓言集结 (V2)</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .oath-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .oath-card-v2 {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 40px;
+            border-radius: 4px;
+            backdrop-filter: blur(20px);
+            max-width: 600px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="parallax-bg">
+        <div class="layer layer-1"></div>
+    </div>
+
+    <main class="main-content">
+        <div class="oath-container">
+            <div class="oath-card-v2">
+                <p id="oath-text" style="font-size: 24px; line-height: 2;">准备好宣读你的誓言了吗？</p>
+                <button id="next-oath" class="btn-v2" style="margin-top: 30px;">开始宣读</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script type="module">
+    // V2 的模块化逻辑
+    import { AudioManager } from './js/AudioManager.js';
+    
+    const audio = new AudioManager();
+    const oaths = ["勇往直前，不惧挑战！", "创新驱动，共创未来！", "团结协作，共筑辉煌！"];
+    let index = 0;
+
+    document.getElementById('next-oath').addEventListener('click', () => {
+        audio.init();
+        audio.playSFX('ignite');
+
+        if (index < oaths.length) {
+            gsap.to('#oath-text', { opacity: 0, x: -20, duration: 0.3, onComplete: () => {
+                document.getElementById('oath-text').innerText = oaths[index];
+                gsap.fromTo('#oath-text', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3 });
+                index++;
+            }});
+        } else {
+            // 标记有一个待解锁的碎片
+            localStorage.setItem('huina2026_pending_unlock', 'true');
+            // 跳转回主页
+            window.location.href = 'index.html';
+        }
+    });
+</script>
+</body>
+</html>
+

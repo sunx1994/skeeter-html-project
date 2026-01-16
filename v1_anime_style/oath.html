@@ -263,13 +263,13 @@
     if (localStorage.getItem('huina_interacted') === 'true') tryPlay();
     else document.addEventListener('click', tryPlay, { once: true });
 
-    // 开场消散：承接 index.html 的径向金光炸裂效果
+    // 开场消散：承接 index.html 的星光跃迁白金效果
     const startFlash = document.getElementById('start-flash');
-    startFlash.style.background = "radial-gradient(circle at center, #fff 0%, var(--primary-gold) 100%)";
+    startFlash.style.background = "radial-gradient(circle at center, #fff 0%, #ffcc00 100%)";
     gsap.to(startFlash, { 
         opacity: 0, 
-        scale: 2, // 向四周炸裂散开
-        duration: 1.8, 
+        scale: 3, // 向四周炸裂散开
+        duration: 2.5, 
         ease: "power3.out", 
         onComplete: () => startFlash.remove() 
     });

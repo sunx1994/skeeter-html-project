@@ -5,8 +5,8 @@ dist/
 .vscode/
 .cursor/
 
-images/
+#images/
 
-audio/
+#audio/
 
 .idea/

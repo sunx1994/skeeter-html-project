@@ -14,7 +14,7 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* 动态云层：营造高空飞翔感 */
+        /* 动态云层 */
         .sky-clouds {
             position: absolute; width: 200%; height: 100%;
             background: url('https://pic.imgdb.cn/item/65a50993871b83018a16823c.png') repeat-x;
@@ -25,10 +25,9 @@
 
         @keyframes moveClouds {
             from { transform: translate(0, 0); }
-            to { transform: translate(-50%, 20%); } /* 斜向下移动，模拟向上飞 */
+            to { transform: translate(-50%, 20%); }
         }
 
-        /* 核心：马儿+翅膀 */
         .pegasus-container {
             position: relative;
             z-index: 20;
@@ -50,7 +49,6 @@
             z-index: 5;
         }
 
-        /* 粒子能量翅膀 */
         .wings {
             position: absolute;
             top: 10%;
@@ -88,7 +86,6 @@
             50% { transform: scaleX(-1) rotate(10deg) scaleY(1.2); }
         }
 
-        /* 最终文字 */
         .final-ui {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -108,14 +105,16 @@
             text-shadow: 0 0 20px rgba(0,212,255,0.5);
         }
 
-        /* 粒子光点 */
-        .particles {
-            position: absolute; width: 100%; height: 100%;
-            pointer-events: none;
+        .transition-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #fff 0%, #ffcc00 100%);
+            z-index: 1000; pointer-events: none;
         }
     </style>
 </head>
 <body>
+
+<div class="transition-layer" id="start-flash"></div>
 
 <div class="scene">
     <div class="sky-clouds"></div>
@@ -126,8 +125,7 @@
             <div class="wing left"></div>
             <div class="wing right"></div>
         </div>
-        <img src="/images/golden%20horse%20running.webp" 
-             class="horse-img">
+        <img src="../images/golden%20horse%20running.webp" class="horse-img">
     </div>
 
     <div class="final-ui">
@@ -137,74 +135,59 @@
 </div>
 
 <script>
-    // 创建背景光点
-    const box = document.getElementById('particle-box');
-    for (let i = 0; i < 50; i++) {
-        const p = document.createElement('div');
-        p.style.position = 'absolute';
-        p.style.width = Math.random() * 5 + 'px';
-        p.style.height = p.style.width;
-        p.style.background = '#fff';
-        p.style.borderRadius = '50%';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.top = Math.random() * 100 + '%';
-        p.style.opacity = Math.random();
-        box.appendChild(p);
-        
-        gsap.to(p, {
-            y: 500,
-            x: -200,
-            duration: Math.random() * 2 + 1,
-            repeat: -1,
-            ease: "none"
-        });
-    }
-
-    // 最终展示序列
     window.onload = () => {
-        // 背景音乐
-        const bgm = new Audio('../audio/3-Amazing Live .mp3');
+        // 1. 无缝音频处理
+        const bgm = new Audio('../audio/2-Happy Epic Violins.mp3');
         bgm.loop = true;
-        bgm.play().catch(() => {
-            document.addEventListener('click', () => bgm.play(), { once: true });
-        });
+        
+        const tryPlay = () => {
+            bgm.play().catch(() => {
+                document.addEventListener('click', () => bgm.play(), { once: true });
+            });
+        };
 
-        // 初始状态：马儿从下方飞入
+        if (localStorage.getItem('huina_interacted') === 'true') {
+            tryPlay();
+        } else {
+            document.addEventListener('click', tryPlay, { once: true });
+        }
+
+        // 2. 开场衔接动画：金光消散
+        gsap.to("#start-flash", { opacity: 0, duration: 1.5, ease: "power2.inOut" });
+
+        // 3. 马儿飞入
         gsap.from(".pegasus-container", {
-            y: 500,
-            x: -200,
-            scale: 0.5,
-            opacity: 0,
-            duration: 2,
-            ease: "power2.out"
+            y: 500, x: -200, scale: 0.5, opacity: 0, duration: 2, ease: "power2.out"
         });
 
         const tl = gsap.timeline();
         tl.to("#title", { opacity: 1, scale: 1, duration: 2, delay: 1.5, ease: "back.out(1.7)" })
           .to("#sub", { opacity: 1, duration: 1 }, "-=0.5");
         
-        // 马儿最后冲向镜头消失或飞走
+        // 4. 马儿飞向远方并跳转
         gsap.to(".pegasus-container", {
-            y: -1200,
-            x: 600,
-            scale: 0.2,
-            duration: 6,
-            delay: 5,
-            ease: "power1.in",
+            y: -1200, x: 600, scale: 0.2, duration: 5, delay: 4, ease: "power1.in",
             onComplete: () => {
-                // 增加一个最后的淡出效果并跳转
-                gsap.to("body", {
-                    opacity: 0,
-                    duration: 1.5,
-                    onComplete: () => {
-                        window.location.href = 'oath.html';
-                    }
+                // 最终转场到 oath.html
+                const endFlash = document.createElement('div');
+                endFlash.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; opacity:0;";
+                document.body.appendChild(endFlash);
+                gsap.to(endFlash, { 
+                    opacity: 1, duration: 1, 
+                    onComplete: () => { window.location.href = 'oath.html'; }
                 });
             }
         });
+
+        // 粒子
+        const box = document.getElementById('particle-box');
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.style.cssText = `position:absolute; width:${Math.random()*5}px; height:${Math.random()*5}px; background:#fff; border-radius:50%; left:${Math.random()*100}%; top:${Math.random()*100}%; opacity:${Math.random()};`;
+            box.appendChild(p);
+            gsap.to(p, { y: 500, x: -200, duration: Math.random()*2+1, repeat: -1, ease: "none" });
+        }
     };
 </script>
-
 </body>
 </html>
-

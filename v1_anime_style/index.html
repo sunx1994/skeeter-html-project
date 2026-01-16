@@ -51,7 +51,7 @@
         /* 远景：星空 (作为半透明叠加层) */
         .stars {
             position: absolute; top: 0; left: 0; width: 200%; height: 100%;
-            background: url('/images/星空.jpg');
+            background: url('../images/星空.jpg');
             animation: moveBg 60s linear infinite;
             z-index: 13; /* 放在遮罩之上，让星星闪烁在画面上 */
             pointer-events: none;
@@ -62,7 +62,7 @@
         /* 中景：动态云层 */
         .clouds {
             position: absolute; bottom: 10%; left: 0; width: 200%; height: 50%;
-            background: url('/images/云层.jpg') repeat-x;
+            background: url('../images/云层.jpg') repeat-x;
             background-size: contain;
             opacity: 0.3;
             filter: blur(2px);
@@ -170,6 +170,19 @@
             transform: translateY(-50%);
         }
 
+        /* 动态发光进度条 */
+        .timeline-progress {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-gold), #fff);
+            box-shadow: 0 0 20px var(--accent-gold);
+            z-index: -1;
+            transform: translateY(-50%);
+            width: 0; /* 由 JS 动态控制 */
+        }
+
         .nav-dot {
             width: 14px;
             height: 14px;
@@ -216,6 +229,7 @@
             cursor: pointer; backdrop-filter: blur(10px);
             transition: all 0.4s; letter-spacing: 5px;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            opacity: 0; transform: translateY(20px); pointer-events: none; /* 初始隐藏 */
         }
 
         .btn-action:hover {
@@ -267,7 +281,7 @@
     </div>
 
     <div class="horse-wrapper" id="horse-box">
-        <img src="/images/golden%20horse%20running.webp"
+        <img src="../images/golden%20horse%20running.webp"
              alt="Anime Horse" class="horse-img">
     </div>
 
@@ -275,7 +289,9 @@
         <button class="btn-action" id="next-btn">跨越 2021 →</button>
     </div>
 
-    <div class="timeline-nav" id="timeline-nav"></div>
+    <div class="timeline-nav" id="timeline-nav">
+        <div class="timeline-progress" id="timeline-progress"></div>
+    </div>
 </div>
 
 <script>
@@ -284,7 +300,7 @@
             year: "2021",
             title: "成立",
             content: ["汇纳肉业成立"],
-            bg: "/images/2021-back.jpg",
+            bg: "../images/2021-back.jpg",
             duration: 5
         },
         {
@@ -296,7 +312,7 @@
                 "9月 汇纳肉业南宁分公司成立",
                 "10月 汇纳肉业福建分公司成立"
             ],
-            bg: "/images/2022-back.jpg",
+            bg: "../images/2022-back.jpg",
             duration: 8
         },
         {
@@ -307,7 +323,7 @@
                 "7月 成立香港办事处",
                 "9月 香港 7-11/百佳全线上架汇纳产品"
             ],
-            bg: "/images/2023-back.jpg",
+            bg: "../images/2023-back.jpg",
             duration: 10
         },
         {
@@ -318,21 +334,21 @@
                 "7月 新增四川泸州工厂和绵阳工厂",
                 "8月 新增深圳平湖工厂"
             ],
-            bg: "/images/2024-back.jpg",
+            bg: "../images/2024-back.jpg",
             duration: 8
         },
         {
             year: "2025",
             title: "突破",
             content: ["数字化转型深度实践", "核心业务模块全面升级", "构建全链路数字化生态"],
-            bg: "/images/2025-back.jpg",
+            bg: "../images/2025-back.jpg",
             duration: 6
         },
         {
             year: "2026",
             title: "飞越",
-            content: ["完成 13 亿销售目标"],
-            bg: "/images/2026-back.jpg",
+            content: [""], // 清空此处文字，避免转场干扰
+            bg: "../images/2026-back.jpg",
             duration: 5
         }
     ];
@@ -350,6 +366,7 @@
             this.contentBox = document.getElementById('content-box');
             this.nextBtn = document.getElementById('next-btn');
             this.navContainer = document.getElementById('timeline-nav');
+            this.progressBar = document.getElementById('timeline-progress');
             this.horseBox = document.getElementById('horse-box');
             
             this.init();
@@ -375,6 +392,12 @@
             
             // 初始化马儿位置
             this.horseBox.style.left = '10%';
+            
+            // 初始化进度条
+            this.updateProgressBar(0);
+            
+            // 初始化按钮状态
+            gsap.to(this.nextBtn, { opacity: 1, y: 0, pointerEvents: "auto", delay: 1 });
             
             // 绑定按钮
             this.nextBtn.onclick = () => {
@@ -413,13 +436,43 @@
             requestAnimationFrame(() => this.animateLines());
         }
 
+        createStarTrail(x, y) {
+            const star = document.createElement('div');
+            const size = Math.random() * 8 + 2;
+            star.style.cssText = `
+                position: fixed; width: ${size}px; height: ${size}px; 
+                background: var(--accent-gold); border-radius: 50%;
+                left: ${x}px; top: ${y}px; z-index: 140;
+                pointer-events: none; opacity: 0.8;
+                box-shadow: 0 0 15px var(--accent-gold), 0 0 5px #fff;
+            `;
+            document.body.appendChild(star);
+            
+            gsap.to(star, {
+                x: "-=" + (Math.random() * 150 + 50), // 向后急速飘散
+                y: "+=" + (Math.random() * 80 - 40),
+                opacity: 0,
+                scale: 0,
+                duration: 0.8 + Math.random() * 0.7,
+                ease: "power2.out",
+                onComplete: () => star.remove()
+            });
+        }
+
+        updateProgressBar(index) {
+            const percentage = (index / (timelineData.length - 1)) * 100;
+            gsap.to(this.progressBar, { width: `${percentage}%`, duration: 0.5, ease: "power2.out" });
+        }
+
         async goToYear(index, isAccelerated = false) {
             if (this.isAnimating || index === this.currentIndex) return;
             this.isAnimating = true;
 
             const moveDuration = isAccelerated ? 1 : (timelineData[index].duration || 5);
+            const isSpecialJump = (this.currentIndex === 2 && index === 3); // 2023 (index 2) -> 2024 (index 3)
 
-            // 1. 旧文字消失
+            // 1. 旧文字和按钮消失
+            gsap.to(this.nextBtn, { opacity: 0, y: 20, pointerEvents: "none", duration: 0.3 });
             await gsap.to([this.yearDisplay, this.yearTitle, this.contentBox], {
                 opacity: 0,
                 y: -20,
@@ -428,15 +481,73 @@
                 ease: "power2.in"
             });
 
-            // 2. 马儿横向移动
+            // 2. 马儿横向移动 (加入跳跃和星光追影)
             const targetPos = 10 + (index * (80 / (timelineData.length - 1)));
-            gsap.to(this.horseBox, {
-                left: `${targetPos}%`,
-                duration: moveDuration,
-                ease: "none"
+
+            const horseTl = gsap.timeline({
+                onUpdate: () => {
+                    // 只有在非静止时产生追影
+                    const rect = this.horseBox.getBoundingClientRect();
+                    this.createStarTrail(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                    
+                    // 动态更新线条进度 (根据马儿实际 left 坐标计算)
+                    const currentLeft = parseFloat(gsap.getProperty(this.horseBox, "left"));
+                    const totalTrackWidth = 80; // 10% to 90%
+                    const progressPercent = ((currentLeft - 10) / totalTrackWidth) * 100;
+                    gsap.set(this.progressBar, { width: `${progressPercent}%` });
+                },
+                onComplete: () => {
+                    // 到达节点后点亮按钮
+                    gsap.to(this.nextBtn, { 
+                        opacity: 1, 
+                        y: 0, 
+                        pointerEvents: "auto", 
+                        duration: 0.6,
+                        ease: "back.out(1.7)"
+                    });
+                }
             });
+
+            if (isSpecialJump) {
+                // 【史诗级飞跃】跨过 2023 -> 2024
+                horseTl.to(this.horseBox, {
+                    left: `${targetPos}%`,
+                    duration: moveDuration,
+                    ease: "power1.inOut"
+                }, 0);
+
+                // 抛物线高度与姿态
+                horseTl.to(this.horseBox, {
+                    y: -200, // 跳得更高一点
+                    rotation: 20, // 身体前倾
+                    scale: 1.5, // 冲向镜头感
+                    duration: moveDuration * 0.45,
+                    ease: "power2.out"
+                }, 0);
+
+                horseTl.to(this.horseBox, {
+                    y: 0,
+                    rotation: 0,
+                    scale: 1,
+                    duration: moveDuration * 0.55,
+                    ease: "bounce.out" // 落地有力的回弹
+                }, moveDuration * 0.45);
+
+                // 跳跃瞬间的爆发闪光
+                gsap.fromTo(this.horseBox, 
+                    { filter: "drop-shadow(0 0 0px #fff) brightness(1)" },
+                    { filter: "drop-shadow(0 0 40px #fff) brightness(2)", duration: 0.4, yoyo: true, repeat: 1 }
+                );
+            } else {
+                // 普通奔跑
+                horseTl.to(this.horseBox, {
+                    left: `${targetPos}%`,
+                    duration: moveDuration,
+                    ease: "none"
+                });
+            }
             
-            // 3. 背景切换 + 平移
+            // 3. 背景切换 + 平移 (保持同步)
             const nextBgId = `bg-${this.bgIndex === 1 ? 2 : 1}`;
             const currentBgId = `bg-${this.bgIndex}`;
             const nextBgEl = document.getElementById(nextBgId);
@@ -527,38 +638,53 @@
 
         finalTransition() {
             this.isAnimating = true;
-            
-            // 1. 马儿“蓄力”动画：轻微缩小并后退，伴随光效
+            localStorage.setItem('huina_interacted', 'true'); // 记录交互状态，供后续页面自动播放音频
+
+            // 1. 清场特效：所有 UI 文字极速向上飘散消失，背景变暗
+            gsap.to([this.uiContent, this.navContainer, this.nextBtn, ".controls"], {
+                y: -200,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power4.in"
+            });
+
+            // 2. 深度蓄力：马儿缓缓后退，缩小，周身金光剧烈闪烁
             gsap.to(this.horseBox, {
-                scale: 0.8,
-                x: "-=30",
-                duration: 0.5,
-                ease: "power2.out",
+                scale: 0.6,
+                x: "-=100",
+                filter: "drop-shadow(0 0 50px #fff) brightness(3)",
+                duration: 1.2,
+                ease: "power2.inOut",
                 onComplete: () => {
-                    // 2. 飞跃：向右上角急速冲刺
+                    // 3. 破空冲击：马儿从屏幕中心爆发，使用“极客冰蓝”特效
                     gsap.to(this.horseBox, {
-                        x: 800,
-                        y: -600,
-                        scale: 2,
+                        x: window.innerWidth / 2,
+                        y: -window.innerHeight / 4,
+                        scale: 45, // 更大的比例
                         opacity: 0,
-                        duration: 1.2,
-                        ease: "power2.in"
+                        duration: 2.0, // 增加到 2 秒，让看清过程
+                        ease: "power4.in"
                     });
 
-                    // 3. 增强速度线感
-                    this.isAnimating = true; // 持续加速效果
-
-                    // 4. 白闪转场
+                    // 4. 冰蓝光幕：径向爆发
                     const flash = document.getElementById('transition-flash');
                     flash.style.display = 'block';
-                    gsap.to(flash, { 
-                        opacity: 1, 
-                        duration: 1, 
-                        delay: 0.5,
-                        onComplete: () => {
-                            window.location.href = 'launch.html';
+                    flash.style.background = "radial-gradient(circle at center, #fff 0%, #00f2ff 40%, #000 100%)";
+                    
+                    gsap.fromTo(flash, 
+                        { opacity: 0, scale: 0.2 },
+                        { 
+                            opacity: 1, 
+                            scale: 1,
+                            duration: 1.5, 
+                            delay: 1.0, // 马儿完全撞破屏幕时亮起
+                            ease: "power2.out",
+                            onComplete: () => {
+                                window.location.href = 'oath.html'; // 跳转
+                            }
                         }
-                    });
+                    );
                 }
             });
         }

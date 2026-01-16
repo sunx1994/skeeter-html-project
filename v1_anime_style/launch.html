@@ -162,6 +162,13 @@
 
     // 最终展示序列
     window.onload = () => {
+        // 背景音乐
+        const bgm = new Audio('../audio/3-Amazing Live .mp3');
+        bgm.loop = true;
+        bgm.play().catch(() => {
+            document.addEventListener('click', () => bgm.play(), { once: true });
+        });
+
         // 初始状态：马儿从下方飞入
         gsap.from(".pegasus-container", {
             y: 500,

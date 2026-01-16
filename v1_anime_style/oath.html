@@ -3,429 +3,572 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huina 2026: 誓言集结</title>
+    <title>Huina 2026: 能量核心集结</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: "PingFang SC", sans-serif; }
+        :root {
+            --primary-gold: #ffd700;
+            --tech-blue: #00d4ff;
+            --energy-purple: #a020f0;
+            --impact-red: #ff4500;
+            --bg-dark: #020205;
+        }
 
-        .scene {
-            position: relative; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%);
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background: var(--bg-dark); 
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #fff;
+        }
+
+        /* 动态星空背景 */
+        .universe {
+            position: fixed; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a3a 0%, #000 100%);
+            z-index: -1;
+        }
+        .nebula {
+            position: absolute; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3; animation: nebula-move 100s linear infinite;
+        }
+        @keyframes nebula-move { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+
+        .container {
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            height: 100vh; padding: 40px 0; box-sizing: border-box;
+            perspective: 1000px;
+        }
+
+        /* 顶部标题 */
+        .header { text-align: center; z-index: 10; }
+        .header h1 {
+            font-size: 48px; font-weight: 100; letter-spacing: 15px; margin: 0;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            background-size: 80% 100%; background-repeat: no-repeat;
+            -webkit-background-clip: text; 
+            background-clip: text;
+            -webkit-text-fill-color: rgba(255,255,255,0.2);
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+        .header p { opacity: 0.5; letter-spacing: 8px; margin-top: 10px; font-weight: 200; }
+
+        /* 能量核心：有机拼图布局 */
+        .core-center {
+            position: relative; width: 600px; height: 600px;
             display: flex; justify-content: center; align-items: center;
         }
 
-        .stars {
-            position: absolute; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.6;
+        /* 科技感外框线 */
+        .tech-frame {
+            position: absolute; width: 700px; height: 700px;
+            pointer-events: none; opacity: 0.2;
+        }
+        .tech-frame svg { width: 100%; height: 100%; filter: drop-shadow(0 0 15px var(--tech-blue)); }
+
+        /* 心形容器 */
+        .heart-container {
+            position: relative; width: 500px; height: 500px;
+            clip-path: path('M250 450 C250 450 50 320 50 150 C50 80 110 25 180 25 C220 25 240 55 250 75 C260 55 280 25 320 25 C390 25 450 80 450 150 C450 320 250 450 250 450 Z');
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            overflow: visible;
         }
 
-        /* 唯美发光背景圆 */
-        .glow-circle {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        /* 心形容器包装 */
-        .heart-container-rel {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: -100px; /* 位置上移 */
-        }
-
-        /* 外部装饰环 */
-        .heart-ring {
+        /* 碎片照片单元 */
+        .photo-cell {
             position: absolute;
-            width: 630px;
-            height: 630px;
-            border: 2px solid rgba(255, 215, 0, 0.15);
-            border-radius: 50%;
-            animation: rotate-ring 25s linear infinite;
-            pointer-events: none;
-        }
-        .heart-ring::before {
-            content: '';
-            position: absolute;
-            top: -10px; left: 50%;
-            width: 15px; height: 15px;
-            background: #ffd700;
-            border-radius: 50%;
-            box-shadow: 0 0 25px #ffd700, 0 0 50px #ff4500;
-        }
-
-        @keyframes rotate-ring {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .heart-wrapper {
-            position: relative;
-            width: 550px; /* 增大容器 */
-            height: 550px;
-            /* 适配 550px 的心形裁切路径 */
-            clip-path: path('M275 495 C275 495 55 352 55 165 C55 88 121 33 198 33 C242 33 264 66 275 88 C286 66 308 33 352 33 C429 33 495 88 495 165 C495 352 275 495 275 495 Z');
-            background: rgba(255, 255, 255, 0.05);
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 1px;
-            padding: 0;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
-            overflow: hidden;
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.3);
-        }
-
-        /* 装饰灯丝效果 - 增强脉冲感 */
-        .heart-lights {
-            position: absolute;
-            top: -25px; left: -25px; right: -25px; bottom: -25px;
-            pointer-events: none;
-            z-index: -1;
-            border: 2px dashed rgba(255, 215, 0, 0.4);
-            border-radius: 50%;
-            filter: drop-shadow(0 0 15px #ffd700);
-            animation: pulse-lights 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-lights {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.05); }
-        }
-
-        .photo-item {
-            width: 100%;
-            height: 100%;
             background-size: cover;
             background-position: center;
-            filter: grayscale(100%) brightness(0.2);
-            opacity: 1;
-            transition: all 0.4s ease;
+            filter: grayscale(100%) brightness(0.2) contrast(1.2);
+            transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.8s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            z-index: 1;
+        }
+        
+        .photo-cell.active {
+            filter: grayscale(0%) brightness(1.1) contrast(1.1);
+            z-index: 5;
+            border: 2px solid var(--primary-gold);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255,255,255,0.5);
         }
 
-        .photo-item.active {
-            filter: grayscale(0%) brightness(1.2);
-            z-index: 2;
+        /* 扫描线效果 */
+        .photo-cell::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--tech-blue), transparent);
+            background-size: 100% 20px; background-repeat: no-repeat;
+            opacity: 0; pointer-events: none;
         }
+        .photo-cell.active::after { animation: scan 3s linear infinite; opacity: 0.2; }
+        @keyframes scan { from { background-position: 0 -100px; } to { background-position: 0 500px; } }
 
-        /* 陨石特效 - 增强彗星感 */
+        /* 陨石特效 */
         .meteor {
-            position: fixed;
-            width: 8px;
-            height: 300px; /* 极长尾巴 */
-            background: linear-gradient(to top, #fff 0%, #ffd700 40%, #ff4500 70%, transparent 100%);
-            border-radius: 50% 50% 10px 10px;
-            z-index: 1000;
-            pointer-events: none;
-            filter: drop-shadow(0 0 30px #ff4500);
-            transform-origin: bottom center;
-        }
-
-        .shockwave {
-            position: fixed;
-            border: 5px solid #ffd700;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 999;
-            box-shadow: 0 0 50px #ff4500, inset 0 0 30px #ff4500;
-        }
-
-        .particle {
-            position: fixed;
-            width: 6px;
-            height: 6px;
-            background: #ffd700;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 999;
-            box-shadow: 0 0 15px #ff4500;
-        }
-
-        /* 誓词卡片和按钮避让 - 位置下移 */
-        .oath-card {
-            position: absolute; bottom: 3%; width: 100%;
+            position: fixed; pointer-events: none; z-index: 1000;
             display: flex; flex-direction: column; align-items: center;
-            z-index: 20;
+        }
+        .meteor-head {
+            width: 40px; height: 40px;
+            background: radial-gradient(circle, #fff 0%, var(--primary-gold) 40%, var(--impact-red) 100%);
+            border-radius: 50%; filter: blur(2px) drop-shadow(0 0 20px var(--impact-red));
+        }
+        .meteor-tail {
+            width: 10px; height: 400px;
+            background: linear-gradient(to top, var(--impact-red), transparent);
+            margin-top: -20px; filter: blur(4px);
         }
 
-        .oath-content {
-            background: rgba(0, 0, 0, 0.75);
+        /* 信息面板 */
+        .info-panel {
+            width: 85%; max-width: 700px;
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            padding: 15px 30px; border-radius: 15px;
-            max-width: 500px; width: 85%;
-            text-align: center; margin-bottom: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px; padding: 20px 30px;
+            text-align: center; margin-bottom: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.5s;
         }
-
+        .info-panel.visible { transform: translateY(0); opacity: 1; }
+        
         .oath-text {
-            color: #ffd700; font-size: 18px; line-height: 1.6;
-            letter-spacing: 1px; font-weight: 400;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            font-size: 24px; color: var(--primary-gold); letter-spacing: 2px; line-height: 1.6;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); min-height: 80px;
+            font-weight: 500;
+        }
+        .leader-info {
+            font-size: 16px; color: var(--tech-blue); margin-top: 10px; opacity: 0.8;
+            letter-spacing: 4px; text-transform: uppercase;
         }
 
-        .btn-ignite {
-            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-            color: #000;
-            padding: 10px 50px; font-size: 20px; border: none;
-            cursor: pointer; font-weight: bold; letter-spacing: 4px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            border-radius: 50px;
+        /* 史诗级按钮 */
+        .ignite-btn {
+            background: none; border: 2px solid var(--primary-gold);
+            padding: 15px 50px; font-size: 20px; color: var(--primary-gold);
+            cursor: pointer; letter-spacing: 5px; font-weight: bold;
+            position: relative; transition: all 0.3s; overflow: hidden;
+            border-radius: 4px; text-transform: uppercase;
         }
+        .ignite-btn:hover { background: var(--primary-gold); color: #000; box-shadow: 0 0 40px var(--primary-gold); }
+        .ignite-btn:disabled { opacity: 0.5; cursor: not-allowed; border-color: #666; color: #666; }
 
-        .btn-ignite:hover {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.9);
-        }
-
-        .btn-ignite:active {
-            transform: scale(0.9);
-        }
-
-        /* 转场光幕 */
-        #flash {
+        /* 特效层 */
+        .flash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #00d4ff; z-index: 100; display: none; opacity: 0;
+            background: #fff; opacity: 0; pointer-events: none; z-index: 2000;
+        }
+        .shockwave {
+            position: fixed; border: 2px solid var(--primary-gold); border-radius: 50%;
+            pointer-events: none; z-index: 999;
         }
 
-        .header {
-            position: absolute; top: 8%; width: 100%; text-align: center;
-            color: #fff; z-index: 10;
+        /* 最终唤醒层 */
+        #final-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.8); z-index: 3000; opacity: 0; pointer-events: none;
+            backdrop-filter: blur(10px);
         }
-        .header h1 { font-size: 42px; font-weight: 200; letter-spacing: 12px; margin: 0; }
-        .header p { opacity: 0.5; letter-spacing: 5px; margin-top: 10px; }
-
-        /* 闪现光效覆盖层 */
-        .flash-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 100;
+        .final-title {
+            font-size: 80px; letter-spacing: 20px; color: #fff;
+            text-shadow: 0 0 50px var(--primary-gold); margin-bottom: 20px;
+        }
+        .final-subtitle {
+            font-size: 30px; letter-spacing: 10px; color: var(--tech-blue);
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-<div id="flash"></div>
+<div class="universe">
+    <div class="nebula"></div>
+</div>
+<div class="flash" id="global-flash"></div>
 
-<div class="scene">
-    <div class="stars"></div>
-    <div class="glow-circle"></div>
+<div id="final-overlay">
+    <div class="final-title">2026 战略达成</div>
+    <div class="final-subtitle">核心能量已觉醒 · 飞跃新篇章</div>
+</div>
 
+<div class="container" id="main-scene">
     <div class="header">
         <h1>2026 誓师大会</h1>
-        <p>汇聚全员志气 · 开启飞跃篇章</p>
+        <p>CORE ASSEMBLY · 开启飞跃篇章</p>
     </div>
 
-    <div class="heart-container-rel">
-        <div class="heart-ring"></div>
-        <div class="heart-lights"></div>
-        <div class="heart-wrapper" id="heart-container">
-            <!-- 动态生成格子 -->
-            <div class="flash-overlay" id="flash-overlay"></div>
+    <div class="core-center">
+        <!-- 科技外框 -->
+        <div class="tech-frame">
+            <svg viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="98" fill="none" stroke="rgba(0,212,255,0.05)" stroke-width="0.2" />
+                <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(0,212,255,0.1)" stroke-width="0.5" stroke-dasharray="5,5" />
+                <path d="M100 2 L105 12 L95 12 Z" fill="var(--tech-blue)" opacity="0.5" />
+                <path d="M100 198 L105 188 L95 188 Z" fill="var(--tech-blue)" opacity="0.5" />
+                <!-- 动态旋转环 -->
+                <circle cx="100" cy="100" r="85" fill="none" stroke="var(--primary-gold)" stroke-width="0.3" stroke-dasharray="20,160">
+                    <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="10s" repeatCount="indefinite" />
+                </circle>
+            </svg>
+        </div>
+        
+        <div class="heart-container" id="core-puzzle">
+            <!-- 脚本动态生成碎片 -->
         </div>
     </div>
 
-    <div class="oath-card">
-        <div class="oath-content">
-            <div class="oath-text" id="oath-display">“点击下方按钮开启誓言集结”</div>
+    <div class="bottom-area">
+        <div class="info-panel" id="info-panel">
+            <div class="oath-text" id="oath-display">SYSTEM READY... 等待指令</div>
+            <div class="leader-info" id="leader-info">TARGET: ENERGY CORE</div>
         </div>
-        <button class="btn-ignite" id="action-btn">宣读并点燃</button>
+        <div style="text-align: center;">
+            <button class="ignite-btn" id="ignite-trigger">初始化能量核心</button>
+        </div>
     </div>
 </div>
 
 <script>
-    const oaths = [
-        "（杜娇）品控中心：捍卫品质，严守红线，铸就黄金口碑！",
-        "（卢丽纯）人资综合部：赋能组织，激活团队，保障高效运行！",
-        "（吴光耀）生产部：拓土开疆，抢占市场高地，产量翻新高！",
-        "（晋志伟）生产部：质效双升，稳产保供，打造卓越产品力！",
-        "（任爱云）市场客服：贴心守护，提升满意度，稳固市场纽带！",
-        "（陈叶仪）肉制品中心：匠心制‘味’打造口碑爆品，引领市场味蕾！",
-        "（舒俊琴）数据中心：驱动增长，优化供应链，提升数据价值！",
-        "（辛奇）物流中心：使命必达，保障时效，完美交付！",
-        "（曹源）财务中心：精打细算，严控风险，保障资金动脉！"
+    const leaders = [
+        { name: "杜娇", dept: "品控中心", oath: "捍卫品质，严守红线，铸就黄金口碑！", photo: "1-余何南.jpg", pos: { x: 50, y: 50, w: 180, h: 220, r: -5 } },
+        { name: "卢丽纯", dept: "人资综合部", oath: "赋能组织，激活团队，保障高效运行！", photo: "2-吴光耀.jpg", pos: { x: 220, y: 20, w: 230, h: 200, r: 3 } },
+        { name: "吴光耀", dept: "生产部", oath: "拓土开疆，抢占市场高地，产量翻新高！", photo: "3-张天雄.jpg", pos: { x: 30, y: 230, w: 200, h: 180, r: 2 } },
+        { name: "晋志伟", dept: "生产部", oath: "质效双升，稳产保供，打造卓越产品力！", photo: "4-曹源.jpg", pos: { x: 180, y: 180, w: 200, h: 220, r: -2 } },
+        { name: "任爱云", dept: "市场客服", oath: "贴心守护，提升满意度，稳固市场纽带！", photo: "5-甘石兰.jpg", pos: { x: 320, y: 180, w: 160, h: 190, r: 5 } },
+        { name: "陈叶仪", dept: "肉制品中心", oath: "匠心制‘味’打造口碑爆品，引领市场味蕾！", photo: "6-舒舒.jpg", pos: { x: 100, y: 350, w: 220, h: 180, r: -3 } },
+        { name: "舒俊琴", dept: "数据中心", oath: "驱动增长，优化供应链，提升数据价值！", photo: "7-.jpg", pos: { x: 280, y: 330, w: 190, h: 170, r: 4 } },
+        { name: "辛奇", dept: "物流中心", oath: "使命必达，保障时效，完美交付！", photo: "8-龚金猛.jpg", pos: { x: 220, y: 80, w: 150, h: 160, r: -8 } },
+        { name: "曹源", dept: "财务中心", oath: "精打细算，严控风险，保障资金动脉！", photo: "9-林文华.jpg", pos: { x: 140, y: 20, w: 160, h: 170, r: 6 } }
     ];
 
-    const photoUrls = [
-        "../images/container/1-余何南.jpg",
-        "../images/container/2-吴光耀.jpg",
-        "../images/container/3-张天雄.jpg",
-        "../images/container/4-曹源.jpg",
-        "../images/container/5-甘石兰.jpg",
-        "../images/container/6-舒舒.jpg",
-        "../images/container/7-.jpg",
-        "../images/container/8-龚金猛.jpg",
-        "../images/container/9-林文华.jpg"
-    ];
+    let currentIndex = -1;
+    const puzzle = document.getElementById('core-puzzle');
+    const cells = [];
 
-    let index = -1;
+    // 背景音乐
+    const bgm = new Audio('../audio/2-Happy Epic Violins.mp3');
+    bgm.loop = true;
+    document.addEventListener('click', () => {
+        if (bgm.paused) bgm.play().catch(e => console.log("BGM 自动播放受阻"));
+    }, { once: true });
 
-    // 初始化无缝照片墙
-    const container = document.getElementById('heart-container');
-    const flashOverlay = document.getElementById('flash-overlay');
-    
-    photoUrls.forEach((url, i) => {
+    // 初始化碎片
+    leaders.forEach((leader, i) => {
         const cell = document.createElement('div');
-        cell.className = 'photo-item';
-        cell.style.backgroundImage = `url('${url}')`;
-        container.appendChild(cell);
+        cell.className = 'photo-cell';
+        // 使用修正后的路径
+        const photoUrl = `../images/container/${leader.photo}`;
+        cell.style.backgroundImage = `url('${photoUrl}')`;
+        
+        gsap.set(cell, {
+            left: leader.pos.x,
+            top: leader.pos.y,
+            width: leader.pos.w,
+            height: leader.pos.h,
+            rotation: leader.pos.r,
+            scale: 0.5,
+            opacity: 0
+        });
+
+        puzzle.appendChild(cell);
+        cells.push(cell);
+
+        // 缓缓浮现效果
+        gsap.to(cell, {
+            opacity: 1, scale: 1, duration: 1.5, delay: i * 0.1, ease: "power2.out"
+        });
     });
 
-    const items = document.querySelectorAll('.photo-item');
+    const trigger = document.getElementById('ignite-trigger');
+    const display = document.getElementById('oath-display');
+    const info = document.getElementById('leader-info');
+    const panel = document.getElementById('info-panel');
 
-    // 陨石撞击效果 - 彗星撞地球加强版
-    function triggerMeteorImpact(idx) {
-        const target = items[idx];
+    trigger.addEventListener('click', () => {
+        if (currentIndex < leaders.length - 1) {
+            currentIndex++;
+            performStarlightPath(currentIndex);
+            panel.classList.add('visible');
+        } else {
+            finalAwakening();
+        }
+    });
+
+    function performStarlightPath(idx) {
+        trigger.disabled = true;
+        const target = cells[idx];
         const rect = target.getBoundingClientRect();
-        const targetX = rect.left + rect.width / 2;
-        const targetY = rect.top + rect.height / 2;
+        const tx = rect.left + rect.width / 2;
+        const ty = rect.top + rect.height / 2;
 
-        // 1. 创建陨石
-        const meteor = document.createElement('div');
-        meteor.className = 'meteor';
-        document.body.appendChild(meteor);
+        // 创建星光点 - 调大并显著增强发光
+        const star = document.createElement('div');
+        star.style.cssText = `
+            position: fixed;
+            width: 25px; height: 25px;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 2000;
+            box-shadow: 0 0 40px 15px var(--primary-gold), 0 0 70px 25px #fff;
+            pointer-events: none;
+        `;
+        document.body.appendChild(star);
 
-        // 随机起点 (屏幕外更远的地方)
-        const startX = window.innerWidth + 800;
-        const startY = -600;
-        const angle = Math.atan2(targetY - startY, targetX - startX) * 180 / Math.PI;
+        // 起点设在屏幕左下方
+        const startX = -100;
+        const startY = window.innerHeight + 100;
         
-        gsap.set(meteor, { x: startX, y: startY, rotation: angle + 90, scale: 0.5 });
+        gsap.set(star, { x: startX, y: startY, scale: 0 });
 
-        // 2. 飞行并撞击 (加速效果)
-        gsap.to(meteor, {
-            x: targetX,
-            y: targetY,
-            scale: 1.5,
-            duration: 0.7,
-            ease: "power4.in", // 越落越快
+        // 星光划过路线
+        const tl = gsap.timeline({
             onComplete: () => {
-                meteor.remove();
-                
-                // 屏幕剧烈抖动 - 极大强度
-                gsap.to(".scene", { 
-                    x: "random(-30, 30)", 
-                    y: "random(-30, 30)", 
-                    duration: 0.04, 
-                    repeat: 15, 
-                    yoyo: true,
-                    onComplete: () => gsap.set(".scene", { x: 0, y: 0 })
-                });
-
-                // 产生大范围火花和冲击波
-                createExplosion(targetX, targetY);
-                createShockwave(targetX, targetY);
-
-                // 点亮图片
-                lightUpWithFlash(idx);
+                star.remove();
+                impactFeedback(tx, ty, idx);
+                trigger.disabled = false;
             }
+        });
+
+        // 路径轨迹动画：先变大再加速划过，带有一点弧度
+        tl.to(star, { scale: 1, duration: 0.3 })
+          .to(star, {
+              x: tx, y: ty,
+              duration: 1.2,
+              ease: "power2.inOut",
+              onUpdate: function() {
+                  // 沿途产生细微粒子 - 增加触发频率
+                  if (Math.random() > 0.3) createTrailParticle(gsap.getProperty(star, "x"), gsap.getProperty(star, "y"));
+              }
+          });
+    }
+
+    function createTrailParticle(x, y) {
+        const p = document.createElement('div');
+        const size = Math.random() * 6 + 2;
+        p.style.cssText = `
+            position: fixed; width: ${size}px; height: ${size}px; background: var(--primary-gold);
+            left: ${x}px; top: ${y}px; border-radius: 50%; z-index: 1999;
+            pointer-events: none; opacity: 0.8; box-shadow: 0 0 10px var(--primary-gold);
+        `;
+        document.body.appendChild(p);
+        gsap.to(p, {
+            x: "+=" + (Math.random() - 0.5) * 80,
+            y: "+=" + (Math.random() - 0.5) * 80,
+            opacity: 0, scale: 0,
+            duration: 1,
+            onComplete: () => p.remove()
         });
     }
 
-    function createShockwave(x, y) {
+    function impactFeedback(x, y, idx) {
+        // 移除屏幕震荡，改为柔和的光效脉冲
+        // 局部白闪
+        gsap.fromTo("#global-flash", { opacity: 0.4 }, { opacity: 0, duration: 0.6 });
+
+        // 产生粒子
+        createSparks(x, y);
+
+        // 冲击波改为淡雅的星光环
         const wave = document.createElement('div');
         wave.className = 'shockwave';
+        wave.style.borderColor = "rgba(255, 215, 0, 0.7)";
         document.body.appendChild(wave);
-        gsap.set(wave, { left: x, top: y, width: 0, height: 0, xPercent: -50, yPercent: -50, opacity: 1 });
-        gsap.to(wave, { width: 700, height: 700, opacity: 0, duration: 0.8, ease: "power2.out", onComplete: () => wave.remove() });
+        gsap.set(wave, { left: x, top: y, width: 0, height: 0, xPercent: -50, yPercent: -50 });
+        gsap.to(wave, { width: 600, height: 600, opacity: 0, duration: 1.2, onComplete: () => wave.remove() });
+
+        // 激活照片
+        const cell = cells[idx];
+        cell.classList.add('active');
+        gsap.fromTo(cell, 
+            { scale: 1.3, filter: "brightness(4) grayscale(0%)" }, 
+            { scale: 1, filter: "brightness(1.1) grayscale(0%)", duration: 1.5, ease: "expo.out" }
+        );
+
+        // 更新文字 - 打印机效果
+        const leader = leaders[idx];
+        display.innerText = "";
+        info.innerText = `${leader.dept} · ${leader.name}`;
+        
+        let charIndex = 0;
+        const typeEffect = setInterval(() => {
+            if (charIndex < leader.oath.length) {
+                display.innerText += leader.oath[charIndex];
+                charIndex++;
+            } else {
+                clearInterval(typeEffect);
+            }
+        }, 40);
+
+        if (idx === leaders.length - 1) {
+            trigger.innerText = "能量核心已觉醒 · 开启飞跃";
+            trigger.style.borderColor = "var(--tech-blue)";
+            trigger.style.color = "var(--tech-blue)";
+            trigger.style.boxShadow = "0 0 30px var(--tech-blue)";
+        }
     }
 
-    function createExplosion(x, y) {
-        for (let i = 0; i < 50; i++) { // 更多粒子
-            const p = document.createElement('div');
-            p.className = 'particle';
-            p.style.left = x + 'px';
-            p.style.top = y + 'px';
-            document.body.appendChild(p);
-            
+    function createSparks(x, y) {
+        for (let i = 0; i < 40; i++) {
+            const spark = document.createElement('div');
+            const size = Math.random() * 5 + 2;
+            spark.style.cssText = `position:fixed; width:${size}px; height:${size}px; background:var(--primary-gold); left:${x}px; top:${y}px; border-radius:50%; z-index:999; box-shadow: 0 0 15px var(--primary-gold);`;
+            document.body.appendChild(spark);
             const angle = Math.random() * Math.PI * 2;
-            const dist = 100 + Math.random() * 350;
-            
-            gsap.to(p, {
+            const dist = 120 + Math.random() * 180;
+            gsap.to(spark, {
                 x: Math.cos(angle) * dist,
                 y: Math.sin(angle) * dist,
-                opacity: 0,
-                scale: 0,
-                duration: 0.6 + Math.random() * 1,
-                ease: "power3.out",
-                onComplete: () => p.remove()
+                opacity: 0, scale: 0,
+                duration: 0.8 + Math.random() * 0.5,
+                ease: "power2.out",
+                onComplete: () => spark.remove()
             });
         }
     }
 
-    function lightUpWithFlash(idx) {
-        const target = items[idx];
+    function finalAwakening() {
+        // 最终大爆发
+        gsap.to("#global-flash", { opacity: 1, duration: 0.8, onComplete: () => {
+            gsap.set("#final-overlay", { opacity: 1, pointerEvents: "auto" });
+            gsap.to("#global-flash", { opacity: 0, duration: 2 });
+            
+            // 1. 持续产生上升粒子
+            const starInterval = setInterval(createRisingStar, 80);
+
+            // 2. 开启烟花盛宴
+            startFireworkShow();
+
+            // 3. 延长时间，让用户看完烟花再跳转
+            setTimeout(() => {
+                clearInterval(starInterval);
+                window.location.href = 'launch.html';
+            }, 9000); // 增加到9秒，给烟花更充分时间
+        }});
+    }
+
+    function startFireworkShow() {
+        let fireworkCount = 0;
+        const maxFireworks = 35; // 增加烟花密度
         
-        // 1. 全局闪现感
-        gsap.to(flashOverlay, { opacity: 0.7, duration: 0.05, yoyo: true, repeat: 1 });
+        const launchNext = () => {
+            if (fireworkCount < maxFireworks) {
+                // 随机连发：增加热闹感
+                const batchSize = Math.random() > 0.6 ? 3 : 1;
+                for (let i = 0; i < batchSize; i++) {
+                    setTimeout(() => {
+                        const targetX = 100 + Math.random() * (window.innerWidth - 200);
+                        const targetY = 50 + Math.random() * (window.innerHeight * 0.5);
+                        launchShell(targetX, targetY);
+                    }, i * 200);
+                    fireworkCount++;
+                }
+                setTimeout(launchNext, 300 + Math.random() * 500);
+            }
+        };
+        launchNext();
+    }
 
-        // 2. 局部点亮特效
-        const tl = gsap.timeline();
-        tl.to(target, { filter: "grayscale(0%) brightness(12)", duration: 0.1 })
-          .to(target, { filter: "grayscale(100%) brightness(0.2)", duration: 0.1 })
-          .to(target, { filter: "grayscale(0%) brightness(5)", duration: 0.1 })
-          .to(target, { filter: "grayscale(0%) brightness(1.3)", duration: 1.2, ease: "power2.out" });
+    function launchShell(tx, ty) {
+        const shell = document.createElement('div');
+        shell.style.cssText = `
+            position: fixed; left: ${tx}px; top: ${window.innerHeight}px;
+            width: 5px; height: 20px; background: #fff;
+            border-radius: 2px; z-index: 3002;
+            box-shadow: 0 0 20px #fff, 0 0 40px var(--primary-gold); 
+            pointer-events: none;
+        `;
+        document.body.appendChild(shell);
 
-        target.classList.add('active');
-
-        // 3. 背景光晕反馈
-        gsap.to(".glow-circle", { 
-            scale: 1.3 + (idx * 0.1), 
-            opacity: 0.5 + (idx * 0.05), 
-            background: `radial-gradient(circle, rgba(255, 215, 0, ${0.3 + idx*0.05}) 0%, transparent 70%)`,
-            duration: 1.5
+        gsap.to(shell, {
+            y: -(window.innerHeight - ty),
+            duration: 0.8 + Math.random() * 0.4,
+            ease: "power2.out",
+            onUpdate: () => {
+                // 发射时的尾迹
+                if (Math.random() > 0.5) {
+                    const spark = document.createElement('div');
+                    spark.style.cssText = `position:fixed; left:${tx}px; top:${gsap.getProperty(shell, "y") + window.innerHeight}px; width:3px; height:3px; background:#fff; border-radius:50%; opacity:0.6;`;
+                    document.body.appendChild(spark);
+                    gsap.to(spark, { opacity:0, duration:0.4, onComplete:() => spark.remove() });
+                }
+            },
+            onComplete: () => {
+                shell.remove();
+                createFirework(tx, ty);
+            }
         });
     }
 
-    document.getElementById('action-btn').addEventListener('click', function() {
-        if (index < oaths.length - 1) {
-            index++;
-            
-            // 按钮点击反馈
-            gsap.to(this, { scale: 0.8, duration: 0.1, yoyo: true, repeat: 1 });
+    function createFirework(x, y) {
+        // 更多欢庆颜色
+        const colors = ['#ffd700', '#00d4ff', '#ff4500', '#a020f0', '#ffffff', '#00ff00', '#ff69b4', '#00ffff', '#ff00ff'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const particleCount = 100 + Math.floor(Math.random() * 100); // 显著增加爆炸粒子
 
-            // 更新文字动画
-            gsap.to(".oath-text", { opacity: 0, y: 30, duration: 0.2, onComplete: () => {
-                document.getElementById('oath-display').innerText = oaths[index];
-                gsap.fromTo(".oath-text", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.4 });
-                
-                // 执行撞击点亮
-                triggerMeteorImpact(index);
-            }});
+        for (let i = 0; i < particleCount; i++) {
+            const p = document.createElement('div');
+            const size = Math.random() * 6 + 3;
+            p.style.cssText = `
+                position: fixed; left: ${x}px; top: ${y}px;
+                width: ${size}px; height: ${size}px;
+                background: ${color}; border-radius: 50%;
+                z-index: 3002; box-shadow: 0 0 15px ${color}, 0 0 30px ${color};
+                pointer-events: none;
+            `;
+            document.body.appendChild(p);
 
-            if (index === oaths.length - 1) {
-                setTimeout(() => {
-                    document.getElementById('oath-display').innerText = "九大部门集结完毕，见证巅峰时刻！";
-                    this.innerText = "开启巅峰飞跃";
-                    this.style.background = "linear-gradient(45deg, #00d4ff, #0056b3)";
-                    this.classList.add('final-step');
-                }, 3000);
-            }
-        } else {
-            // 跳转到最终章
-            const flash = document.getElementById('flash');
-            flash.style.display = 'block';
-            gsap.to(flash, { opacity: 1, duration: 2, onComplete: () => {
-                window.location.href = 'launch.html';
-            }});
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 10 + Math.random() * 20;
+            const distance = 200 + Math.random() * 400; // 更大的爆炸半径
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            gsap.to(p, {
+                x: tx,
+                y: ty + 250, // 显著的重力下坠
+                opacity: 0,
+                scale: 0,
+                rotation: Math.random() * 720,
+                duration: 2 + Math.random() * 2,
+                ease: "expo.out",
+                onComplete: () => p.remove()
+            });
         }
-    });
+        
+        // 爆炸时的强力闪烁效果
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+            position: fixed; left: ${x}px; top: ${y}px;
+            width: 0; height: 0; background: ${color};
+            border-radius: 50%; z-index: 3001; opacity: 0.5;
+            filter: blur(30px); pointer-events: none;
+            transform: translate(-50%, -50%);
+        `;
+        document.body.appendChild(flash);
+        gsap.to(flash, {
+            width: 700, height: 700, opacity: 0,
+            duration: 0.6, onComplete: () => flash.remove()
+        });
+    }
 
-    // 点击容器也可以触发
-    container.addEventListener('click', () => {
-        if (!document.getElementById('action-btn').classList.contains('final-step')) {
-            document.getElementById('action-btn').click();
-        }
-    });
+    function createRisingStar() {
+        const star = document.createElement('div');
+        const x = Math.random() * window.innerWidth;
+        const size = Math.random() * 3 + 1;
+        star.style.cssText = `position:fixed; left:${x}px; bottom:0; width:${size}px; height:${size}px; background:#fff; border-radius:50%; z-index:3001; box-shadow: 0 0 10px #fff;`;
+        document.body.appendChild(star);
+        gsap.to(star, {
+            y: -window.innerHeight,
+            x: x + (Math.random() - 0.5) * 200,
+            opacity: 0,
+            duration: 2 + Math.random() * 2,
+            onComplete: () => star.remove()
+        });
+    }
 </script>
 
 </body>

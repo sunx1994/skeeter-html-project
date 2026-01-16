@@ -567,6 +567,18 @@
     // 启动动画
     window.onload = () => {
         new TimelineRunner();
+        
+        // 背景音乐逻辑
+        const bgm = new Audio('../audio/1-Cinematic Adventure Epic Trailer.mp3');
+        bgm.loop = true;
+        
+        const startAudio = () => {
+            bgm.play().catch(() => {
+                // 浏览器限制，等待交互
+                document.addEventListener('click', () => bgm.play(), { once: true });
+            });
+        };
+        startAudio();
     };
 </script>
 

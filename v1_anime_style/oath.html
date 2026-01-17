@@ -76,17 +76,38 @@
 
     .photo-cell {
         position: absolute;
-        background-size: cover;
-        background-position: center;
         clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        filter: grayscale(100%) brightness(0.2) contrast(1.2);
-        transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        /* 布局设置：将部门名称居中 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 1.2;
+        letter-spacing: 2px;
+        
+        /* 初始状态：暗金边框和微弱透明感 */
+        background: rgba(255, 204, 0, 0.03);
+        border: 1px solid rgba(255, 204, 0, 0.15);
+        color: rgba(255, 204, 0, 0.2); /* 初始文字暗淡 */
+        
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1;
+        user-select: none;
     }
     
     .photo-cell.active {
-        filter: grayscale(0%) brightness(1.1) contrast(1.1) drop-shadow(0 0 20px var(--primary-gold));
+        background: radial-gradient(circle, rgba(255, 204, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+        color: #fff;
+        border: 2px solid var(--primary-gold);
+        text-shadow: 0 0 10px var(--primary-gold), 0 0 20px var(--primary-gold);
+        filter: brightness(1.2) drop-shadow(0 0 25px var(--primary-gold));
         z-index: 5;
+        transform: scale(1.1) rotate(2deg); /* 激活时轻微放大并偏转，增加动感 */
     }
 
     .photo-cell::after {
@@ -185,6 +206,32 @@
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: #fff; z-index: 5000; pointer-events: none;
     }
+
+    /* 回退按钮样式 */
+    .back-btn {
+        position: absolute;
+        left: 40px; 
+        bottom: 8%;
+        width: 40px; 
+        height: 40px;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        cursor: pointer; 
+        color: rgba(255, 255, 255, 0.08); /* 极淡显示，不干扰视线 */
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 50%; 
+        transition: all 0.4s;
+        z-index: 1000;
+        pointer-events: auto;
+    }
+    .back-btn:hover {
+        color: var(--primary-gold);
+        border-color: var(--primary-gold);
+        background: rgba(255, 204, 0, 0.05);
+        box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+    }
+    .back-btn svg { width: 24px; height: 24px; }
 </style>
 </head>
 <body>
@@ -231,12 +278,17 @@
         <div style="text-align: center;">
             <button class="ignite-btn" id="ignite-trigger">宣誓启动</button>
         </div>
+        
+        <!-- 隐形回退按钮 -->
+        <div class="back-btn" id="back-trigger" title="回退上一步">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+        </div>
     </div>
 </div>
 
 <div class="signature">
-    物流中心 · 辛奇<br>
-    PRECISION · SPEED · RELIABILITY
+    HUINA STRATEGIC CORE ASSEMBLY v1.0<br>
+    STATUS: <span style="color: var(--primary-gold); font-weight: bold;">ENERGIZED</span> | PROTOCOL: 2026_FLY
 </div>
 
 <script>
@@ -253,22 +305,23 @@
     ];
 
     let currentIndex = -1;
+    let isWaitingForActivation = false; // 是否正在等待点亮当前部门
     const puzzle = document.getElementById('core-puzzle');
     const cells = [];
 
     // 音频处理
-    const bgm = new Audio('../audio/2-Happy Epic Violins.mp3'); // 2号音乐更有力度，适合誓师
+    const bgm = new Audio('../audio/2-Happy Epic Violins.mp3'); 
     bgm.loop = true;
     const tryPlay = () => { bgm.play().catch(() => document.addEventListener('click', () => bgm.play(), { once: true })); };
     if (localStorage.getItem('huina_interacted') === 'true') tryPlay();
     else document.addEventListener('click', tryPlay, { once: true });
 
-    // 开场消散：承接 index.html 的星光跃迁白金效果
+    // 开场消散
     const startFlash = document.getElementById('start-flash');
     startFlash.style.background = "radial-gradient(circle at center, #fff 0%, #ffcc00 100%)";
     gsap.to(startFlash, { 
         opacity: 0, 
-        scale: 3, // 向四周炸裂散开
+        scale: 3, 
         duration: 2.5, 
         ease: "power3.out", 
         onComplete: () => startFlash.remove() 
@@ -277,7 +330,7 @@
     leaders.forEach((leader, i) => {
         const cell = document.createElement('div');
         cell.className = 'photo-cell';
-        cell.style.backgroundImage = `url('../images/container/${leader.photo}')`;
+        cell.innerText = leader.dept; // 注入部门名称
         gsap.set(cell, { left: leader.pos.x, top: leader.pos.y, width: leader.pos.w, height: leader.pos.h, scale: 0.8, opacity: 0 });
         puzzle.appendChild(cell);
         cells.push(cell);
@@ -290,14 +343,129 @@
     const panel = document.getElementById('info-panel');
 
     trigger.addEventListener('click', () => {
-        if (currentIndex < leaders.length - 1) {
-            currentIndex++;
-            performStarlightPath(currentIndex);
+        // 1. 系统初始化
+        if (!panel.classList.contains('visible')) {
             panel.classList.add('visible');
+            display.innerText = "系统就绪：请开启宣誓集结";
+            trigger.innerText = "读取首个部门誓言 →";
+            gsap.to(trigger, { 
+                boxShadow: "0 0 40px var(--primary-gold)", 
+                repeat: -1, 
+                yoyo: true, 
+                duration: 1 
+            });
+            return;
+        }
+
+        // 停止按钮呼吸提示
+        gsap.killTweensOf(trigger);
+        gsap.set(trigger, { boxShadow: "0 10px 30px rgba(0,0,0,0.5)" });
+
+        // 2. 逻辑分发：是点亮当前部门，还是读取下一个部门？
+        if (isWaitingForActivation) {
+            // 执行点亮动画
+            performStarlightPath(currentIndex);
+            isWaitingForActivation = false;
+            
+            if (currentIndex === leaders.length - 1) {
+                trigger.innerText = "终极启动 · 扬帆起航";
+                trigger.style.cssText = "background:linear-gradient(135deg, #ff4500 0%, #b22222 100%); color:#fff; border-color:#ffd700; box-shadow:0 0 50px rgba(255, 69, 0, 0.8);";
+            } else {
+                trigger.innerText = "读取下一部门誓言 →";
+            }
         } else {
-            finalAwakening();
+            // 读取下一条誓言数据
+            if (currentIndex < leaders.length - 1) {
+                currentIndex++;
+                showLeaderTextOnly(currentIndex);
+                isWaitingForActivation = true;
+                trigger.innerText = "确认点亮能量核心 →";
+            } else {
+                finalAwakening();
+            }
         }
     });
+
+    // 回退逻辑实现
+    const backBtn = document.getElementById('back-trigger');
+    backBtn.addEventListener('click', () => {
+        if (currentIndex < 0 && !panel.classList.contains('visible')) return;
+
+        // 情况 A: 当前处于“已读取文字，等待点亮”状态
+        if (isWaitingForActivation) {
+            // 1. 停止当前单元格的呼吸提示
+            gsap.killTweensOf(cells[currentIndex]);
+            gsap.set(cells[currentIndex], { 
+                scale: 1, 
+                opacity: 1, 
+                border: "1px solid rgba(255, 204, 0, 0.15)" 
+            });
+            
+            currentIndex--;
+            isWaitingForActivation = false;
+
+            if (currentIndex < 0) {
+                // 回到系统最初始状态
+                panel.classList.remove('visible');
+                display.innerText = "能量核心就绪：等待宣誓集结";
+                info.innerText = "目标：2026 战略宏图开启";
+                trigger.innerText = "宣誓启动";
+                // 恢复初始按钮动效
+                gsap.to(trigger, { 
+                    boxShadow: "0 0 40px var(--primary-gold)", 
+                    repeat: -1, 
+                    yoyo: true, 
+                    duration: 1 
+                });
+            } else {
+                // 回到上一个部门【已点亮】的状态
+                const prevLeader = leaders[currentIndex];
+                display.innerText = prevLeader.oath;
+                info.innerText = `${prevLeader.dept} · ${prevLeader.name}`;
+                trigger.innerText = "读取下一部门誓言 →";
+                trigger.style.cssText = ""; 
+            }
+        } 
+        // 情况 B: 当前处于“已点亮激活”状态 (刚刚按了激活，或点完了最后一个人)
+        else {
+            if (currentIndex < 0) return;
+
+            const cell = cells[currentIndex];
+            cell.classList.remove('active');
+            gsap.killTweensOf(cell);
+            
+            // 重新进入“等待激活”状态
+            isWaitingForActivation = true;
+            showLeaderTextOnly(currentIndex);
+            trigger.innerText = "确认点亮能量核心 →";
+            trigger.style.cssText = ""; // 恢复普通按钮样式（针对最后一个人）
+        }
+    });
+
+    function showLeaderTextOnly(idx) {
+        const leader = leaders[idx];
+        display.innerText = "";
+        info.innerText = `${leader.dept} · ${leader.name}`;
+        let charIndex = 0;
+        const typeEffect = setInterval(() => {
+            if (charIndex < leader.oath.length) { 
+                display.innerText += leader.oath[charIndex]; 
+                charIndex++; 
+            } else { 
+                clearInterval(typeEffect); 
+            }
+        }, 40);
+
+        // 给即将点亮的部门一个微弱的跳动提示
+        gsap.to(cells[idx], { 
+            scale: 1.05, 
+            opacity: 0.8, 
+            duration: 0.6, 
+            repeat: -1, 
+            yoyo: true,
+            border: "1px solid var(--primary-gold)"
+        });
+    }
 
     function performStarlightPath(idx) {
         trigger.disabled = true;
@@ -323,6 +491,9 @@
     }
 
     function impactFeedback(x, y, idx) {
+        // 停止之前的呼吸提示动画
+        gsap.killTweensOf(cells[idx]);
+
         gsap.fromTo("#global-flash", { opacity: 0.5, backgroundColor: "#ff4500" }, { opacity: 0, duration: 0.8 });
         const wave = document.createElement('div');
         wave.className = 'shockwave';
@@ -330,21 +501,13 @@
         document.body.appendChild(wave);
         gsap.set(wave, { left: x, top: y, width: 0, height: 0, xPercent: -50, yPercent: -50 });
         gsap.to(wave, { width: 700, height: 700, opacity: 0, duration: 1.5, onComplete: () => wave.remove() });
+        
         const cell = cells[idx];
         cell.classList.add('active');
-        gsap.fromTo(cell, { scale: 1.4, filter: "brightness(5) drop-shadow(0 0 50px #ff4500)" }, { scale: 1, filter: "brightness(1.1) drop-shadow(0 0 20px #ffcc00)", duration: 1.5, ease: "elastic.out(1, 0.3)" });
-        const leader = leaders[idx];
-        display.innerText = "";
-        info.innerText = `${leader.dept} · ${leader.name}`;
-        let charIndex = 0;
-        const typeEffect = setInterval(() => {
-            if (charIndex < leader.oath.length) { display.innerText += leader.oath[charIndex]; charIndex++; }
-            else { clearInterval(typeEffect); }
-        }, 40);
-        if (idx === leaders.length - 1) {
-            trigger.innerText = "终极启动 · 扬帆起航";
-            trigger.style.cssText = "background:linear-gradient(135deg, #ff4500 0%, #b22222 100%); color:#fff; border-color:#ffd700; box-shadow:0 0 50px rgba(255, 69, 0, 0.8);";
-        }
+        gsap.fromTo(cell, { scale: 1.4, filter: "brightness(5) drop-shadow(0 0 50px #ff4500)" }, { scale: 1.1, filter: "brightness(1.1) drop-shadow(0 0 20px #ffcc00)", duration: 1.5, ease: "elastic.out(1, 0.3)" });
+        
+        // 誓词文字的强调反馈
+        gsap.fromTo([display, info], { filter: "brightness(3)" }, { filter: "brightness(1)", duration: 0.8 });
     }
 
     // Canvas 烟花

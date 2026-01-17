@@ -1,0 +1,224 @@
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --accent-color: #ffe66d;
+    --bg-color: #2f3e46;
+    --text-color: #f7fff7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'ZCOOL KuaiLe', cursive, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    height: 90vh;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+header {
+    margin-bottom: 30px;
+}
+
+.level-indicator {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-shadow: 3px 3px 0 var(--primary-color);
+    letter-spacing: 2px;
+}
+
+/* 唱片动画 */
+.disk-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto 40px;
+}
+
+.disk {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 10px solid #111;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    background: #000;
+    position: relative;
+    transition: transform 0.5s ease;
+}
+
+.disk::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: #333;
+    border: 4px solid #555;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.disk img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    transition: opacity 0.5s;
+}
+
+.disk.playing {
+    animation: rotate 5s linear infinite;
+}
+
+.disk.playing img {
+    opacity: 1;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.needle {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    width: 20px;
+    height: 120px;
+    background: #ccc;
+    border-radius: 10px;
+    transform-origin: top center;
+    transform: rotate(-30deg);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 3;
+}
+
+.needle.playing {
+    transform: rotate(5deg);
+}
+
+/* 按钮样式 */
+.main-btn, .bingo-btn, .reveal-btn, .next-btn {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.main-btn {
+    background: var(--primary-color);
+    color: white;
+    width: 80%;
+}
+
+.main-btn:hover {
+    transform: scale(1.05);
+    background: #ff5252;
+}
+
+.action-area {
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+.hint-text {
+    margin-bottom: 15px;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+}
+
+.bingo-btn {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.reveal-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.answer-card {
+    display: none;
+    background: rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 20px;
+    margin-top: 20px;
+    animation: slideUp 0.5s ease;
+}
+
+.answer-info h2 {
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.next-btn {
+    background: var(--accent-color);
+    color: #333;
+    margin-top: 15px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Bingo 特效 */
+.bingo-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 8rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 20px var(--primary-color);
+    z-index: 100;
+    pointer-events: none;
+    animation: popOut 1s forwards;
+}
+
+@keyframes popOut {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+}

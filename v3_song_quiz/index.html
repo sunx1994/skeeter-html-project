@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>听歌识曲 - 挑战赛</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 背景装饰 -->
+        <div class="background-overlay"></div>
+        
+        <header>
+            <div class="level-indicator">第 <span id="current-level">1</span> / 10 首</div>
+            <h1>听歌识曲</h1>
+        </header>
+
+        <main>
+            <div class="disk-container">
+                <div class="disk" id="disk">
+                    <img src="../images/星空.jpg" alt="唱片封面" id="song-cover">
+                </div>
+                <div class="needle" id="needle"></div>
+            </div>
+
+            <div class="controls">
+                <button id="play-pause-btn" class="main-btn">
+                    <span class="icon">▶</span> <span class="text">开始播放</span>
+                </button>
+            </div>
+
+            <div class="action-area" id="action-area" style="display: none;">
+                <p class="hint-text">猜猜这是什么歌？</p>
+                <div class="guess-buttons">
+                    <button id="bingo-btn" class="bingo-btn">Bingo! 答对了</button>
+                    <button id="reveal-btn" class="reveal-btn">揭晓答案</button>
+                </div>
+            </div>
+
+            <div class="answer-card" id="answer-card">
+                <div class="answer-info">
+                    <h2 id="answer-title">歌曲名</h2>
+                    <p id="answer-artist">歌手</p>
+                </div>
+                <button id="next-btn" class="next-btn">下一首</button>
+            </div>
+        </main>
+
+        <!-- 特效容器 -->
+        <div id="effect-container"></div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

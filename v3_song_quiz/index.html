@@ -9,8 +9,12 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- 背景装饰 -->
-        <div class="background-overlay"></div>
+        <!-- 动态背景层 -->
+        <div class="scene">
+            <div class="stars"></div>
+            <div class="clouds"></div>
+            <div class="bg-overlay"></div>
+        </div>
         
         <header>
             <div class="level-indicator">第 <span id="current-level">1</span> / 10 首</div>
@@ -25,26 +29,38 @@
                 <div class="needle" id="needle"></div>
             </div>
 
-            <div class="controls">
-                <button id="play-pause-btn" class="main-btn">
-                    <span class="icon">▶</span> <span class="text">开始播放</span>
-                </button>
-            </div>
-
-            <div class="action-area" id="action-area" style="display: none;">
-                <p class="hint-text">猜猜这是什么歌？</p>
-                <div class="guess-buttons">
-                    <button id="bingo-btn" class="bingo-btn">Bingo! 答对了</button>
-                    <button id="reveal-btn" class="reveal-btn">揭晓答案</button>
+            <div class="controls-wrapper">
+                <!-- 播放/继续播放按钮 -->
+                <div id="play-area">
+                    <button id="play-pause-btn" class="main-btn">
+                        <span class="icon">▶</span> <span class="text">开始播放</span>
+                    </button>
                 </div>
-            </div>
 
-            <div class="answer-card" id="answer-card">
-                <div class="answer-info">
-                    <h2 id="answer-title">歌曲名</h2>
-                    <p id="answer-artist">歌手</p>
+                <!-- 猜歌操作区 -->
+                <div class="action-area" id="action-area" style="display: none;">
+                    <p class="hint-text">猜猜这是什么歌？</p>
+                    <div class="guess-buttons">
+                        <button id="bingo-btn" class="bingo-btn">Bingo! 答对了</button>
+                        <button id="reveal-btn" class="reveal-btn">揭晓答案</button>
+                    </div>
                 </div>
-                <button id="next-btn" class="next-btn">下一首</button>
+
+                <!-- 答案与下一首 -->
+                <div class="answer-card" id="answer-card" style="display: none;">
+                    <div class="answer-info">
+                        <h2 id="answer-title">歌曲名</h2>
+                        <p id="answer-artist">歌手</p>
+                    </div>
+                    <button id="next-btn" class="next-btn">下一首</button>
+                </div>
+
+                <!-- 最终结算 -->
+                <div id="result-screen" style="display: none;">
+                    <h2 class="result-title">挑战结束!</h2>
+                    <p class="result-score">你一共答对了 <span id="score-count">0</span> 首</p>
+                    <button onclick="location.reload()" class="main-btn">重新开始</button>
+                </div>
             </div>
         </main>
 

@@ -39,6 +39,36 @@ body {
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
+/* 动态背景 */
+.scene {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; overflow: hidden; border-radius: 26px;
+}
+
+.stars {
+    position: absolute; top: 0; left: 0; width: 200%; height: 100%;
+    background: url('../images/星空.jpg');
+    animation: moveBg 60s linear infinite;
+    opacity: 0.4; mix-blend-mode: screen;
+}
+
+.clouds {
+    position: absolute; bottom: 0; left: 0; width: 200%; height: 60%;
+    background: url('../images/云层.jpg') repeat-x;
+    background-size: contain;
+    opacity: 0.2; animation: moveBg 30s linear infinite;
+}
+
+@keyframes moveBg {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+.bg-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(47,62,70,0.6) 0%, rgba(47,62,70,0.9) 100%);
+}
+
 header {
     margin-bottom: 30px;
 }
@@ -58,9 +88,9 @@ h1 {
 /* 唱片动画 */
 .disk-container {
     position: relative;
-    width: 250px;
-    height: 250px;
-    margin: 0 auto 40px;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 30px;
 }
 
 .disk {
@@ -81,10 +111,10 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background: #333;
-    border: 4px solid #555;
+    border: 3px solid #555;
     border-radius: 50%;
     z-index: 2;
 }
@@ -113,9 +143,9 @@ h1 {
 .needle {
     position: absolute;
     top: -10px;
-    right: 20px;
-    width: 20px;
-    height: 120px;
+    right: 10px;
+    width: 15px;
+    height: 100px;
     background: #ccc;
     border-radius: 10px;
     transform-origin: top center;
@@ -130,41 +160,41 @@ h1 {
 
 /* 按钮样式 */
 .main-btn, .bingo-btn, .reveal-btn, .next-btn {
-    padding: 15px 30px;
-    font-size: 1.2rem;
+    padding: 15px 25px;
+    font-size: 1.1rem;
     border: none;
     border-radius: 50px;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    margin: 10px;
+    margin: 8px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .main-btn {
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), #ee5253);
     color: white;
     width: 80%;
+    border: 3px solid rgba(255,255,255,0.2);
 }
 
 .main-btn:hover {
     transform: scale(1.05);
-    background: #ff5252;
 }
 
 .action-area {
-    margin-top: 20px;
+    margin-top: 15px;
     animation: fadeIn 0.5s ease;
 }
 
 .hint-text {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: var(--accent-color);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .bingo-btn {
-    background: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color), #20bf6b);
     color: white;
 }
 
@@ -174,23 +204,43 @@ h1 {
 }
 
 .answer-card {
-    display: none;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     padding: 20px;
     border-radius: 20px;
-    margin-top: 20px;
+    margin-top: 15px;
     animation: slideUp 0.5s ease;
+    border: 2px solid var(--accent-color);
 }
 
 .answer-info h2 {
     color: var(--accent-color);
     margin-bottom: 5px;
+    font-size: 1.5rem;
 }
 
 .next-btn {
     background: var(--accent-color);
     color: #333;
-    margin-top: 15px;
+    margin-top: 10px;
+    width: 80%;
+}
+
+/* 结果页 */
+.result-title {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+    animation: bounce 1s infinite;
+}
+
+.result-score {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 @keyframes fadeIn {
@@ -209,7 +259,7 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    font-size: 8rem;
+    font-size: 6rem;
     color: var(--accent-color);
     text-shadow: 0 0 20px var(--primary-color);
     z-index: 100;

@@ -370,7 +370,7 @@
             title: "成立",
             content: ["汇纳肉业成立"],
             bg: "../images/2021-back.jpg",
-            duration: 5
+            duration: 2
         },
         {
             year: "2022",
@@ -382,7 +382,7 @@
                 "10月 汇纳肉业福建分公司成立"
             ],
             bg: "../images/2022-back.jpg",
-            duration: 8
+            duration: 2.5
         },
         {
             year: "2023",
@@ -393,7 +393,7 @@
                 "9月 香港 7-11/百佳全线上架汇纳产品"
             ],
             bg: "../images/2023-back.jpg",
-            duration: 10
+            duration: 3
         },
         {
             year: "2024",
@@ -404,21 +404,21 @@
                 "8月 新增深圳平湖工厂"
             ],
             bg: "../images/2024-back.jpg",
-            duration: 8
+            duration: 2.5
         },
         {
             year: "2025",
             title: "突破",
             content: ["数字化转型深度实践", "核心业务模块全面升级", "构建全链路数字化生态"],
             bg: "../images/2025-back.jpg",
-            duration: 6
+            duration: 2.5
         },
         {
             year: "2026",
             title: "深耕",
             content: [""], // 清空此处文字，避免转场干扰
             bg: "../images/2026-back.jpg",
-            duration: 5
+            duration: 2
         }
     ];
 
@@ -650,7 +650,7 @@
                     // 如果马儿在空中（index > 2），产生踏空涟漪（频率限制）
                     if (index > 2) {
                         this.rippleCounter++;
-                        if (this.rippleCounter % 8 === 0) { // 每 8 帧产生一个
+                        if (this.rippleCounter % 5 === 0) { // 频率加快，每 5 帧产生一个
                             this.createHoofRipple(rect.left + rect.width * 0.3, rect.bottom - 20);
                         }
                     }
@@ -690,7 +690,7 @@
                 horseTl.to(this.horseBox, {
                     left: `${targetPos}%`,
                     y: targetY,
-                    rotation: isFirstJump ? -15 : -10, // 爬升时稍微仰头
+                    rotation: isFirstJump ? -20 : -15, // 速度加快，仰头角度稍微加大
                     scale: isFirstJump ? 1.3 : 1.1, // 第一次跳跃时稍微放大增强冲击力
                     duration: moveDuration,
                     ease: isFirstJump ? "power2.out" : "power1.inOut"
@@ -763,8 +763,8 @@
             const chars = this.contentBox.querySelectorAll('.char');
 
             // 计算同步打字速度
-            const initialDelay = 0.5;
-            const availableTime = Math.max(0.1, moveDuration - initialDelay - 0.2);
+            const initialDelay = 0.3; // 缩短等待时间
+            const availableTime = moveDuration * 0.7; // 文字在总时间的 70% 内显示完毕
             const charStagger = availableTime / chars.length;
 
             await gsap.to(chars, {

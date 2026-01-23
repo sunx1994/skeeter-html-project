@@ -68,7 +68,7 @@
     .tech-frame svg { width: 100%; height: 100%; filter: drop-shadow(0 0 20px var(--tech-blue)); }
 
     .heart-container {
-        position: relative; width: 700px; height: 450px;
+        position: relative; width: 700px; height: 460px;
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.05);
         overflow: visible;
@@ -83,12 +83,12 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 10px;
+        padding: 8px;
         box-sizing: border-box;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 900;
         line-height: 1.2;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
         
         /* 初始状态：暗金边框和微弱透明感 */
         background: rgba(255, 204, 0, 0.03);
@@ -252,7 +252,7 @@
 
 <div class="container" id="main-scene">
     <div class="header">
-        <h1>2026 誓师大会</h1>
+        <h1>2026 受聘大会</h1>
         <p>CORE ASSEMBLY · 开启飞跃篇章</p>
     </div>
 
@@ -293,15 +293,27 @@
 
 <script>
     const leaders = [
-        { name: "杜娇", dept: "品控中心", oath: "捍卫品质，严守红线，铸就黄金口碑！", photo: "1-余何南.jpg", pos: { x: 50, y: 30, w: 140, h: 160 } },
-        { name: "卢丽纯", dept: "人资综合部", oath: "赋能组织，激活团队，保障高效运行！", photo: "2-吴光耀.jpg", pos: { x: 210, y: 30, w: 140, h: 160 } },
-        { name: "吴光耀", dept: "生产部", oath: "拓土开疆，抢占市场高地，产量翻新高！", photo: "3-张天雄.jpg", pos: { x: 370, y: 30, w: 140, h: 160 } },
-        { name: "晋志伟", dept: "生产部", oath: "质效双升，稳产保供，打造卓越产品力！", photo: "4-曹源.jpg", pos: { x: 530, y: 30, w: 140, h: 160 } },
-        { name: "任爱云", dept: "市场客服", oath: "贴心守护，提升满意度，稳固市场纽带！", photo: "5-甘石兰.jpg", pos: { x: 130, y: 150, w: 140, h: 160 } },
-        { name: "陈叶仪", dept: "肉制品中心", oath: "匠心制‘味’打造口碑爆品，引领市场味蕾！", photo: "6-舒舒.jpg", pos: { x: 290, y: 150, w: 140, h: 160 } },
-        { name: "舒俊琴", dept: "数据中心", oath: "驱动增长，优化供应链，提升数据价值！", photo: "7-.jpg", pos: { x: 450, y: 150, w: 140, h: 160 } },
-        { name: "辛奇", dept: "物流中心", oath: "使命必达，保障时效，完美交付！", photo: "8-龚金猛.jpg", pos: { x: 210, y: 270, w: 140, h: 160 } },
-        { name: "曹源", dept: "财务中心", oath: "精打细算，严控风险，保障资金动脉！", photo: "9-林文华.jpg", pos: { x: 370, y: 270, w: 140, h: 160 } }
+        // 第一排 (5个)
+        { name: "开拓", dept: "平湖项目", oath: "拓土开疆，抢占市场高地，产量翻新高！", photo: "1-余何南.jpg", pos: { x: 40, y: 20, w: 110, h: 125 } },
+        { name: "卓越", dept: "观澜项目", oath: "质效双升，稳产保供，打造卓越产品力！", photo: "2-吴光耀.jpg", pos: { x: 170, y: 20, w: 110, h: 125 } },
+        { name: "新篇", dept: "汕尾项目", oath: "高效推进，开拓山海蓝图，共铸马年新篇！", photo: "3-张天雄.jpg", pos: { x: 300, y: 20, w: 110, h: 125 } },
+        { name: "增效", dept: "宅翁门店", oath: "促进销量，提升单店运营效率与客户满意度！", photo: "4-曹源.jpg", pos: { x: 430, y: 20, w: 110, h: 125 } },
+        { name: "连接", dept: "市场客服", oath: "贴心守护，提升客户满意度，稳固市场纽带！", photo: "10-new.jpg", pos: { x: 560, y: 20, w: 110, h: 125 } },
+
+        // 第二排 (4个)
+        { name: "滋味", dept: "聊家肠项目", oath: "聊出生活滋味，肠伴万家炊烟，打造国民风味！", photo: "5-甘石兰.jpg", pos: { x: 105, y: 120, w: 110, h: 125 } },
+        { name: "口碑", dept: "肉制品项目", oath: "匠心制‘味’，打造口碑爆品，引领市场味蕾！", photo: "6-舒舒.jpg", pos: { x: 235, y: 120, w: 110, h: 125 } },
+        { name: "美味", dept: "餐饮中心", oath: "食以匠心，饮以真情，打造不止于美味的餐饮体验！", photo: "7-.jpg", pos: { x: 365, y: 120, w: 110, h: 125 } },
+        { name: "生态", dept: "藏香猪项目", oath: "追寻原生珍馐，以自然馈赠，滋养现代健康生活！", photo: "11-new.jpg", pos: { x: 495, y: 120, w: 110, h: 125 } },
+
+        // 第三排 (3个)
+        { name: "创新", dept: "产品中心", oath: "驱动增长，优化供应链，挖掘数据价值！", photo: "8-龚金猛.jpg", pos: { x: 170, y: 220, w: 110, h: 125 } },
+        { name: "合规", dept: "产权中心", oath: "恪守专业，让每一次权属交割，都清晰、安心、有温度！", photo: "9-林文华.jpg", pos: { x: 300, y: 220, w: 110, h: 125 } },
+        { name: "时效", dept: "物流中心", oath: "使命必达，保障时效，完美交付！", photo: "12-new.jpg", pos: { x: 430, y: 220, w: 110, h: 125 } },
+
+        // 第四排 (2个)
+        { name: "稳进", dept: "沈阳项目", oath: "北国风雪砺匠心，深耕沈阳绽宏图，筑就坚实典范！", photo: "13-new.jpg", pos: { x: 235, y: 320, w: 110, h: 125 } },
+        { name: "精益", dept: "财务中心", oath: "精打细算，严控风险，保障资金动脉！", photo: "14-new.jpg", pos: { x: 365, y: 320, w: 110, h: 125 } }
     ];
 
     let currentIndex = -1;

@@ -47,6 +47,7 @@ let currentLevel = 0;
 let score = 0;
 let isPlaying = false;
 let isRevealed = false;
+let isDragging = false;
 const audio = new Audio();
 
 // --- DOM 元素获取 ---
@@ -65,6 +66,24 @@ const answerArtist = document.getElementById('answer-artist');
 const songCover = document.getElementById('song-cover');
 const resultScreen = document.getElementById('result-screen');
 const scoreCount = document.getElementById('score-count');
+
+// 侧边导航按钮
+const prevNavBtn = document.getElementById('prev-nav-btn');
+const nextNavBtn = document.getElementById('next-nav-btn');
+
+// 进度条相关
+const progressBar = document.getElementById('progress-bar');
+const currentTimeEl = document.getElementById('current-time');
+const durationTimeEl = document.getElementById('duration-time');
+
+// --- 辅助函数 ---
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
 
 // --- 核心逻辑函数 ---
 
@@ -89,6 +108,14 @@ function loadSong(index) {
     playPauseBtn.style.display = 'inline-block';
     playPauseBtn.querySelector('.text').innerText = "开始播放";
     
+    // 进度条重置
+    progressBar.value = 0;
+    currentTimeEl.innerText = "00:00";
+    durationTimeEl.innerText = "00:00";
+    
+    // 更新侧边按钮可用性
+    prevNavBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+    
     updateVisuals();
 }
 
@@ -103,6 +130,42 @@ function updateVisuals() {
         playPauseBtn.querySelector('.icon').innerText = "▶";
     }
 }
+
+// --- 音频事件监听 ---
+
+audio.addEventListener('loadedmetadata', () => {
+    progressBar.max = audio.duration;
+    durationTimeEl.innerText = formatTime(audio.duration);
+});
+
+audio.addEventListener('timeupdate', () => {
+    if (!isDragging) {
+        progressBar.value = audio.currentTime;
+        currentTimeEl.innerText = formatTime(audio.currentTime);
+    }
+});
+
+audio.addEventListener('ended', () => {
+    isPlaying = false;
+    updateVisuals();
+    playPauseBtn.querySelector('.text').innerText = "重新听一遍";
+    if (!isRevealed) actionArea.style.display = 'block';
+});
+
+// --- 进度条交互 ---
+
+progressBar.addEventListener('input', () => {
+    isDragging = true;
+    currentTimeEl.innerText = formatTime(progressBar.value);
+});
+
+progressBar.addEventListener('change', () => {
+    audio.currentTime = progressBar.value;
+    isDragging = false;
+    if (isPlaying) audio.play();
+});
+
+// --- 按钮点击事件 ---
 
 playPauseBtn.addEventListener('click', () => {
     if (isPlaying) {
@@ -119,6 +182,23 @@ playPauseBtn.addEventListener('click', () => {
         playPauseBtn.querySelector('.text').innerText = "暂停去猜";
     }
     updateVisuals();
+});
+
+// 侧边导航逻辑
+prevNavBtn.addEventListener('click', () => {
+    if (currentLevel > 0) {
+        currentLevel--;
+        loadSong(currentLevel);
+    }
+});
+
+nextNavBtn.addEventListener('click', () => {
+    if (currentLevel < totalLevels - 1) {
+        currentLevel++;
+        loadSong(currentLevel);
+    } else {
+        showFinalResult();
+    }
 });
 
 function revealAnswer(isBingo = false) {
@@ -160,23 +240,19 @@ nextBtn.addEventListener('click', () => {
 });
 
 function showFinalResult() {
-    // 隐藏所有游戏面板
     document.querySelector('header').style.display = 'none';
     document.querySelector('.disk-container').style.display = 'none';
+    document.querySelector('.progress-container').style.display = 'none';
     playPauseBtn.style.display = 'none';
     actionArea.style.display = 'none';
     answerCard.style.display = 'none';
     
-    // 显示结算
+    // 同时也隐藏侧边按钮
+    prevNavBtn.style.display = 'none';
+    nextNavBtn.style.display = 'none';
+    
     resultScreen.style.display = 'block';
     scoreCount.innerText = score;
 }
-
-audio.addEventListener('ended', () => {
-    isPlaying = false;
-    updateVisuals();
-    playPauseBtn.querySelector('.text').innerText = "重新听一遍";
-    if (!isRevealed) actionArea.style.display = 'block';
-});
 
 window.onload = () => loadSong(currentLevel);
